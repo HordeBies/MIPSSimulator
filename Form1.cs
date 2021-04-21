@@ -24,15 +24,32 @@ namespace MIPS
         {
             InitializeComponent();
             UpdateButtons();
-            simulator = new MIPSSimulator("test");
-
-            dataGridView2.AutoGenerateColumns = true;
+            simulator = new MIPSSimulator(richTextBox1.Lines,richTextBox2.Lines);
+            simulator.Registers.ForEach(i => Debug.WriteLine(i.Label));
+            InitDGVbindings();
+        }
+        private void InitDGVbindings()
+        {
             Registers.DataSource = simulator.Registers;
-            //dataGridView2.DefaultCellStyle.BackColor = Color.FromArgb(30, 30, 30);
             var test = new BindingSource();
             test.DataSource = simulator.Registers.Where(i => i.Label.StartsWith("$s")).ToList();
             dataGridView2.DataSource = test;
             dataGridView2.Update();
+
+            test = new BindingSource();
+            test.DataSource = simulator.Registers.Where(i => i.Label.StartsWith("$v")).ToList();
+            dataGridView3.DataSource = test;
+            dataGridView3.Update();
+
+            test = new BindingSource();
+            test.DataSource = simulator.Registers.Where(i => i.Label.StartsWith("$a") && !i.Label.EndsWith("at")).ToList();
+            dataGridView4.DataSource = test;
+            dataGridView4.Update();
+
+            test = new BindingSource();
+            test.DataSource = simulator.Registers.Where(i => i.Label.StartsWith("$t"));
+            dataGridView5.DataSource = test;
+            dataGridView5.Update();
         }
         private int index = 0;
         private int indexPos = 0;
@@ -203,10 +220,10 @@ namespace MIPS
 
         private void metroSetButton1_Click(object sender, EventArgs e)
         {
-            var test = simulator.Registers.Where(i => i.Label.StartsWith("$s")).ToList();
+            var test = simulator.Registers;
             test.ForEach(i => Debug.WriteLine(i.Value));
             test.ForEach(i => i.Value += 10);
-            dataGridView2.Refresh();
+            metroSetTabControl2.SelectedTab.Controls[0].Refresh();
         }
     }
 }

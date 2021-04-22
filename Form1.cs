@@ -25,7 +25,6 @@ namespace MIPS
             InitializeComponent();
             UpdateButtons();
             simulator = new MIPSSimulator(richTextBox1.Lines, richTextBox2.Lines, this);
-            simulator.Registers.ForEach(i => Debug.WriteLine(i.Label));
             InitDGVbindings();
         }
         public void SendLog(string msg)
@@ -35,9 +34,11 @@ namespace MIPS
         public void ReportError(string err)
         {
             metroSetListBox1.AddItem(err);
+            metroSetListBox1.AddItem("Halted!");
             state = SimStateMachine.Stopped;
             RunFlag = false;
             backgroundWorker1.CancelAsync();
+            simulator.isHalted = true;
         }
         public void updateState()
         {
@@ -47,7 +48,7 @@ namespace MIPS
         {
             Registers.DataSource = simulator.Registers;
             var test = new BindingSource();
-            test.DataSource = simulator.Registers.Where(i => i.Label.StartsWith("$s")).ToList();
+            test.DataSource = simulator.Registers.Where(i => i.Label.StartsWith("$s") && !i.Label.EndsWith("sp")).ToList();
             dataGridView2.DataSource = test;
             dataGridView2.Update();
 
@@ -65,14 +66,32 @@ namespace MIPS
             test.DataSource = simulator.Registers.Where(i => i.Label.StartsWith("$t"));
             dataGridView5.DataSource = test;
             dataGridView5.Update();
+
+            test = new BindingSource();
+            test.DataSource = simulator.Stack;
+            dataGridView1.DataSource = test;
+            dataGridView1.Update();
         }
         private int index = 0;
-        private int indexPos = 0;
 
         private bool RunFlag = false;
         private void Enable(Button button) => button.Enabled = true;
         private void Disable(Button button) => button.Enabled = false;
 
+        private void EnableEditing()
+        {
+            richTextBox1.ReadOnly = false;
+            richTextBox2.ReadOnly = false;
+            richTextBox1.Refresh();
+            richTextBox2.Refresh();
+        }
+        private void DisableEditing()
+        {
+            richTextBox1.ReadOnly = true;
+            richTextBox2.ReadOnly = true;
+            richTextBox1.Refresh();
+            richTextBox2.Refresh();
+        }
         private void UpdateButtons()
         {
             switch (state)
@@ -83,6 +102,7 @@ namespace MIPS
                     Disable(PauseButton);
                     Disable(StopButton);
                     Enable(ResetButton);
+                    EnableEditing();
                     break;
                 case SimStateMachine.Running:
                     Disable(RunButton);
@@ -90,6 +110,7 @@ namespace MIPS
                     Enable(PauseButton);
                     Enable(StopButton);
                     Disable(ResetButton);
+                    DisableEditing();
                     break;
                 case SimStateMachine.Paused:
                     Enable(RunButton);
@@ -97,6 +118,7 @@ namespace MIPS
                     Disable(PauseButton);
                     Enable(StopButton);
                     Enable(ResetButton);
+                    DisableEditing();
                     break;
                 case SimStateMachine.Stopped:
                     Enable(RunButton);
@@ -104,6 +126,15 @@ namespace MIPS
                     Disable(PauseButton);
                     Disable(StopButton);
                     Enable(ResetButton);
+                    EnableEditing();
+                    break;
+                case SimStateMachine.Finished:
+                    Disable(RunButton);
+                    Disable(RunOneButton);
+                    Disable(PauseButton);
+                    Enable(StopButton);
+                    Enable(ResetButton);
+                    EnableEditing();
                     break;
                 default:
                     break;
@@ -120,33 +151,25 @@ namespace MIPS
             if (index == richTextBox1.Lines.Length)
             {
                 index = 0;
-                indexPos = 0;
             }
 
-            if (state == SimStateMachine.Ready)
+            if (state == SimStateMachine.Ready || state == SimStateMachine.Finished)
                 UpdateSim();
             RunFlag = true;
-            backgroundWorker1.RunWorkerAsync(new Tuple<bool, int, string[]>(RunFlag, index, richTextBox1.Lines));
             state = SimStateMachine.Running;
+            backgroundWorker1.RunWorkerAsync(new Tuple<bool, int, string[]>(RunFlag, index, richTextBox1.Lines));
             UpdateButtons();
         }
         private void RunOneStep(object sender, EventArgs e)
         {
             if (backgroundWorker1.IsBusy)
                 return;
-            if (index == richTextBox1.Lines.Length)
-            {
-                index = 0;
-                indexPos = 0;
-            }
 
-            if (state == SimStateMachine.Ready)
+            if (state == SimStateMachine.Ready || state == SimStateMachine.Finished)
                 UpdateSim();
-
-            Debug.WriteLine(richTextBox1.Lines);
             RunFlag = false;
-            backgroundWorker1.RunWorkerAsync(new Tuple<bool, int, string[]>(RunFlag, index, richTextBox1.Lines));
             state = SimStateMachine.Running;
+            backgroundWorker1.RunWorkerAsync(new Tuple<bool, int, string[]>(RunFlag, index, richTextBox1.Lines));
             UpdateButtons();
         }
         private void Pause(object sender, EventArgs e)
@@ -162,7 +185,7 @@ namespace MIPS
             state = SimStateMachine.Stopped;
             RunFlag = false;
             index = 0;
-            indexPos = 0;
+            simulator.Stop(richTextBox1.Lines, richTextBox2.Lines);
             UpdateButtons();
         }
 
@@ -176,7 +199,7 @@ namespace MIPS
 
             if (runFlag)
             {
-                while (LineIndex < Input.Length)
+                while (!simulator.DoneFlag)
                 {
                     if (backgroundWorker1.CancellationPending)
                     {
@@ -184,8 +207,8 @@ namespace MIPS
                         break;
                     }
 
-                    Thread.Sleep(new TimeSpan(0, 0, 2)); //test
-                    simulator.Execute();
+                    //Thread.Sleep(new TimeSpan(0, 0, 2)); //test
+                    LineIndex = simulator.Execute();
 
                     if (backgroundWorker1.CancellationPending)
                     {
@@ -193,36 +216,47 @@ namespace MIPS
                         break;
                     }
 
-                    LineIndex++;
                     backgroundWorker1.ReportProgress(LineIndex);
                 }
             }
             else
             {
-                Thread.Sleep(new TimeSpan(0, 0, 2)); //test
-                simulator.Execute();
-                LineIndex++;
+                //Thread.Sleep(new TimeSpan(0, 0, 2)); //test
+                LineIndex = simulator.Execute();
+                
                 backgroundWorker1.ReportProgress(LineIndex);
             }
 
-            e.Result = new int?(LineIndex);
+            e.Result = new Tuple<int,bool>(LineIndex,simulator.DoneFlag);
         }
+        private void EvaluateSelection(int index)
+        {
+            if (index >= richTextBox1.Lines.Length)
+                return;
 
+            richTextBox1.SelectAll();
+            richTextBox1.SelectionBackColor = Color.White;
+
+            int indexPos = 0;
+
+            for(int i = 0; i< index; i++)
+            {
+                indexPos += (richTextBox1.Lines[i].Length + 1);
+
+            }
+
+            richTextBox1.Select(indexPos, richTextBox1.Lines[index].Length);
+            richTextBox1.SelectionBackColor = Color.FromArgb(95, 207, 255);
+        }
         private void Simulator_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             index = e.ProgressPercentage - 1;
 
-            if (index >= richTextBox1.Lines.Length)
-                return;
-
-            indexPos += (index - 1 >= 0 ? richTextBox1.Lines[index - 1].Length + 1 : 0);
-
-            richTextBox1.SelectAll();
-            richTextBox1.SelectionBackColor = Color.White;
-            richTextBox1.Select(indexPos, richTextBox1.Lines[index].Length);
-
-            richTextBox1.SelectionBackColor = Color.FromArgb(95, 207, 255);
-
+            var test = new BindingSource();
+            test.DataSource = simulator.MemoryTable;
+            dataGridView6.DataSource = test;
+            dataGridView6.Update();
+            EvaluateSelection(index);
             index++;
             UpdateButtons();
         }
@@ -230,25 +264,32 @@ namespace MIPS
         private void Simulator_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             RunFlag = false;
-            state = SimStateMachine.Ready;
+            state = SimStateMachine.Paused;
             if (e.Cancelled)
             {
                 SendLog("Cancelled");
                 return;
             }
+            var res = (e.Result as Tuple<int, bool>);
 
-            index = (e.Result as int?).Value;
-            SendLog("Done");
+            index = res.Item1;
+            if (res.Item2)
+            {
+                state = SimStateMachine.Finished;
+            }
+            if (simulator.isHalted)
+            {
+                Stop(null, null);
+                return;
+            }
             UpdateButtons();
 
         }
 
-        private void metroSetButton1_Click(object sender, EventArgs e)
+        private void InputChanged(object sender, EventArgs e)
         {
-            var test = simulator.Registers;
-            test.ForEach(i => Debug.WriteLine(i.Value));
-            test.ForEach(i => i.Value += 10);
-            metroSetTabControl2.SelectedTab.Controls[0].Refresh();
+            if (!richTextBox1.Lines.SequenceEqual(simulator.InputText) || !richTextBox2.Lines.SequenceEqual(simulator.InputData))
+                Stop(null, null);
         }
     }
 }

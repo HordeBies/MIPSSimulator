@@ -68,6 +68,7 @@
     <Compile Include="Sim\MemoryData.cs" />
     <Compile Include="Sim\Procedures.cs" />
     <Compile Include="Sim\Register.cs" />
+    <Compile Include="Sim\StackData.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

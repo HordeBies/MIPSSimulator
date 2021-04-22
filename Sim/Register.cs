@@ -19,5 +19,7 @@ namespace MIPS.Sim
 
         public string Label { get => label; set => label = value; }
         public int Value { get => value; set => this.value = value; }
+
+
     }
 }

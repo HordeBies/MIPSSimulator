@@ -8,6 +8,7 @@ namespace MIPS.Sim
 {
     public class LabelData
     {
+        public int Memory;
         private string label;
         private int address;
         public string Label { get => label; set => label = value; }

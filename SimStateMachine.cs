@@ -12,5 +12,6 @@ namespace MIPS
         Running,
         Paused,
         Stopped,
+        Finished,
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MIPS
 {
-    enum SimStateMachine
+    public enum SimStateMachine
     {
         Ready,
         Running,

@@ -18,15 +18,30 @@ namespace MIPS
     {
         public bool mode;
         public MIPSSimulator simulator;
-        private SimStateMachine state = SimStateMachine.Stopped;
+        public SimStateMachine state = SimStateMachine.Ready;
 
         public Form1()
         {
             InitializeComponent();
             UpdateButtons();
-            simulator = new MIPSSimulator(richTextBox1.Lines,richTextBox2.Lines);
+            simulator = new MIPSSimulator(richTextBox1.Lines, richTextBox2.Lines, this);
             simulator.Registers.ForEach(i => Debug.WriteLine(i.Label));
             InitDGVbindings();
+        }
+        public void SendLog(string msg)
+        {
+            metroSetListBox1.AddItem(msg);
+        }
+        public void ReportError(string err)
+        {
+            metroSetListBox1.AddItem(err);
+            state = SimStateMachine.Stopped;
+            RunFlag = false;
+            backgroundWorker1.CancelAsync();
+        }
+        public void updateState()
+        {
+            //metroSetTabControl2.SelectedTab.Controls[0].Refresh();
         }
         private void InitDGVbindings()
         {
@@ -94,6 +109,10 @@ namespace MIPS
                     break;
             }
         }
+        private void UpdateSim()
+        {
+            simulator.PreLoad(richTextBox1.Lines, richTextBox2.Lines);
+        }
         private void Run(object sender, EventArgs e)
         {
             if (backgroundWorker1.IsBusy)
@@ -104,7 +123,8 @@ namespace MIPS
                 indexPos = 0;
             }
 
-
+            if (state == SimStateMachine.Ready)
+                UpdateSim();
             RunFlag = true;
             backgroundWorker1.RunWorkerAsync(new Tuple<bool, int, string[]>(RunFlag, index, richTextBox1.Lines));
             state = SimStateMachine.Running;
@@ -120,6 +140,10 @@ namespace MIPS
                 indexPos = 0;
             }
 
+            if (state == SimStateMachine.Ready)
+                UpdateSim();
+
+            Debug.WriteLine(richTextBox1.Lines);
             RunFlag = false;
             backgroundWorker1.RunWorkerAsync(new Tuple<bool, int, string[]>(RunFlag, index, richTextBox1.Lines));
             state = SimStateMachine.Running;
@@ -161,7 +185,7 @@ namespace MIPS
                     }
 
                     Thread.Sleep(new TimeSpan(0, 0, 2)); //test
-                    //Simulate
+                    simulator.Execute();
 
                     if (backgroundWorker1.CancellationPending)
                     {
@@ -176,6 +200,7 @@ namespace MIPS
             else
             {
                 Thread.Sleep(new TimeSpan(0, 0, 2)); //test
+                simulator.Execute();
                 LineIndex++;
                 backgroundWorker1.ReportProgress(LineIndex);
             }
@@ -208,12 +233,12 @@ namespace MIPS
             state = SimStateMachine.Ready;
             if (e.Cancelled)
             {
-                Debug.WriteLine("Cancelled");
+                SendLog("Cancelled");
                 return;
             }
 
             index = (e.Result as int?).Value;
-            Debug.WriteLine("Done");
+            SendLog("Done");
             UpdateButtons();
 
         }

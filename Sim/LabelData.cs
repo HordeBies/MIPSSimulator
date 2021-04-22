@@ -10,12 +10,11 @@ namespace MIPS.Sim
     {
         private string label;
         private int address;
-        public string Label { get => label; }
-        public int Address { get => address; }
-        public LabelData(string label, int value)
+        public string Label { get => label; set => label = value; }
+        public int Address { get => address; set => address = value; }
+        public LabelData()
         {
-            this.label = label;
-            this.address = value;
+
         }
     }
 }

@@ -980,7 +980,6 @@ namespace MIPS
             this.Text = "MIPS";
             this.TextColor = System.Drawing.Color.White;
             this.ThemeName = "MetroDark";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.metroSetTabControl1.ResumeLayout(false);
             this.metroSetSetTabPage1.ResumeLayout(false);
             this.metroSetSetTabPage2.ResumeLayout(false);

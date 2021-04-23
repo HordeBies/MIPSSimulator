@@ -16,22 +16,23 @@ namespace MIPS.Sim
         public List<string> InputData;
         string CurrentInstruction;
         int CurrentLine;
+        public int LastLine;
         public List<MemoryData> MemoryTable = new List<MemoryData>();
         List<LabelData> LabelTable = new List<LabelData>();
         public bool isHalted = false;
         public bool DoneFlag = false;
         bool PreProcessFlag = false;
+        public int[] args = new int[3]; //register names,values... for the instruction.
         bool FPA = false;
         public void InputChanged() => PreProcessFlag = true;
 
-        int[] r = new int[3]; //register names,values... for the instruction.
         public MIPSSimulator(string[] text,string[] data, Form1 sender)
         {
             this.gui = sender;
             Random rand = new Random(Environment.TickCount);
 
             Registers = new List<Register>(32);
-            string[] tempRegisters = new string[]{"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp","$s8","$ra"};
+            string[] tempRegisters = new string[]{"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp","$fp","$ra"};
             for (int i = 0; i < tempRegisters.Length; i++)
             {
                 Registers.Add(new Register(tempRegisters[i], 0));
@@ -42,7 +43,7 @@ namespace MIPS.Sim
             }
 
             string[] tempInstructionSet = new string[] { "add", "sub", "and", "or", "slt", "add.d","c.eq.d","c.lt.d","c.le.d","sub.d",
-                "addi", "andi", "ori", "slti","lw", "sw", "beq", "bne", "j", "jal","bclt","bclf" };
+                "addi", "andi", "ori", "slti","lw", "sw", "beq", "bne", "j", "jal","bc1t","bc1f" };
             InstructionSet = new string[tempInstructionSet.Length];
             for (int i = 0; i < tempInstructionSet.Length; i++)
             {
@@ -55,8 +56,9 @@ namespace MIPS.Sim
                 Stack.Add(new StackData(0));
             }
 
-            Registers[29].Value = 40396; //sp
             Registers[28].Value = 10000000; //gp
+            Registers[29].Value = 40396; //sp
+            Registers[30].Value = 40396; //fp
 
 
             InputText = new List<string>(text);
@@ -101,6 +103,7 @@ namespace MIPS.Sim
                 if(CurrentInstruction == "")
                 {
                     CurrentLine++;
+                    LastLine = CurrentLine - 1;
                     continue;
                 }
                 int instruction = ParseInstruction();
@@ -118,6 +121,7 @@ namespace MIPS.Sim
                 if (instruction <16 || instruction > 19)
                 {
                     CurrentLine++;
+                    LastLine = CurrentLine - 1;
                 }
                 break;   
             }
@@ -169,7 +173,6 @@ namespace MIPS.Sim
             if(OperationID == -1)
             {
                 gui.ReportError("Error:Unknown operation");
-                gui.SendLog("On Line" + CurrentLine);
                 return -2;
             }
             if(OperationID < 10) // R Format
@@ -188,7 +191,6 @@ namespace MIPS.Sim
                 if(CurrentInstruction != "")
                 {
                     gui.ReportError("Error: Extra arguments provided");
-                    gui.SendLog("On Line: " + CurrentLine);
                     return -2;
                 }
             }else if(OperationID < 14) // I format
@@ -206,10 +208,9 @@ namespace MIPS.Sim
                 if(!int.TryParse(tempString,out temp))
                 {
                     gui.ReportError("Error: Not a valid Immediate argument");
-                    gui.SendLog("On Line: " + CurrentLine);
                     return -2;
                 }
-                r[2] = temp;
+                args[2] = temp;
             }else if (OperationID < 16) // lw sw
             {
                 string tempString = "";
@@ -231,14 +232,12 @@ namespace MIPS.Sim
                     if(j == CurrentInstruction.Length)
                     {
                         gui.ReportError("Error: '(' expected");
-                        gui.SendLog("On Line: " + CurrentLine);
                         return -2;
                     }
                     int temp;
                     if(!int.TryParse(tempString,out temp))
                     {
                         gui.ReportError("Error: not a valid offset");
-                        gui.SendLog("On Line: " + CurrentLine);
                         return -2;
                     }
                     offset = temp;
@@ -247,26 +246,23 @@ namespace MIPS.Sim
                     if(CurrentInstruction == "" || CurrentInstruction.ElementAt(0) != '(' || CurrentInstruction.Length < 2)
                     {
                         gui.ReportError("Error: '(' expected");
-                        gui.SendLog("On Line: " + CurrentLine);
                         return -2;
                     }
                     CurrentInstruction = CurrentInstruction.Substring(1);
                     RemoveSpaces(CurrentInstruction);
                     FindRegister(1);
                     RemoveSpaces(CurrentInstruction);
-                    if (CurrentInstruction == "" || CurrentInstruction.ElementAt(0) != ')' || CurrentInstruction.Length < 2)
+                    if (CurrentInstruction == "" || CurrentInstruction.ElementAt(0) != ')')
                     {
                         gui.ReportError("Error: ')' expected");
-                        gui.SendLog("On Line: " + CurrentLine);
                         return -2;
                     }
                     CurrentInstruction = CurrentInstruction.Substring(1);
                     OnlySpaces(0, CurrentInstruction.Length, CurrentInstruction);
-                    r[2] = offset;
-                    if(r[2] == -1)
+                    args[2] = offset;
+                    if(args[2] == -1)
                     {
                         gui.ReportError("Error: invalid offset");
-                        gui.SendLog("On Line: " + CurrentLine);
                         return -2;
                     }
                 }
@@ -281,11 +277,11 @@ namespace MIPS.Sim
                             foundLocation = true;
                             if(OperationID == 14)
                             {
-                                r[1] = MemoryTable[j].Value;
+                                args[1] = MemoryTable[j].Value;
                             }
                             else
                             {
-                                r[1] = j;
+                                args[1] = j;
                             }
                             break;
                         }
@@ -293,10 +289,9 @@ namespace MIPS.Sim
                     if (!foundLocation)
                     {
                         gui.ReportError("Error: invalid label");
-                        gui.SendLog("On Line: " + CurrentLine);
                         return -2;
                     }
-                    r[2] = -1;
+                    args[2] = -1;
                 }
                 
             }else if(OperationID < 18) // beq bne
@@ -316,14 +311,13 @@ namespace MIPS.Sim
                     if(tempString == LabelTable[j].Label)
                     {
                         found = true;
-                        r[2] = LabelTable[j].Address;
+                        args[2] = LabelTable[j].Address;
                         break;
                     }
                 }
                 if (!found)
                 {
                     gui.ReportError("Error: invalid label");
-                    gui.SendLog("On Line: " + CurrentLine);
                     return -2;
                 }
             }else if(OperationID <22) // j jal bclt bclf
@@ -336,13 +330,12 @@ namespace MIPS.Sim
                     if(tempString == LabelTable[j].Label)
                     {
                         found = true;
-                        r[0] = LabelTable[j].Address;
+                        args[0] = LabelTable[j].Address;
                     }
                 }
                 if (!found)
                 {
                     gui.ReportError("Error: invalid label");
-                    gui.SendLog("On Line: " + CurrentLine);
                     return -2;
                 }
             }
@@ -366,7 +359,6 @@ namespace MIPS.Sim
                 }else if(foundValue && temp != ' ' && temp != '\t' && doneFinding)
                 {
                     gui.ReportError("Error: Unexpected text after value");
-                    gui.SendLog("On Line: " + CurrentLine);
                 }else if(!foundValue && temp != ' ' && temp != '\t')
                 {
                     foundValue = true;
@@ -385,7 +377,6 @@ namespace MIPS.Sim
             if(CurrentInstruction.Length <2 || CurrentInstruction.ElementAt(0) != ',')
             {
                 gui.ReportError("Error: Comma expected");
-                gui.SendLog("On Line: " + CurrentLine);
                 return false;
             }
             CurrentInstruction = CurrentInstruction.Substring(1);
@@ -398,7 +389,6 @@ namespace MIPS.Sim
             if(CurrentInstruction.ElementAt(0) != '$' || CurrentInstruction.Length < 2)
             {
                 gui.ReportError("Error: Register expected");
-                gui.SendLog("On Line: " + CurrentLine);
                 return foundRegister;
             }
             CurrentInstruction = CurrentInstruction.Substring(1);
@@ -410,7 +400,6 @@ namespace MIPS.Sim
             else if(register == "ze")
             {
                 gui.ReportError("Error: Register expected");
-                gui.SendLog("On Line: " + CurrentLine);
                 return foundRegister;
             }
             register = "$" + register;
@@ -418,7 +407,7 @@ namespace MIPS.Sim
             {
                 if(register == Registers[i].Label)
                 {
-                    r[num] = i;
+                    args[num] = i;
                     foundRegister = true;
                     if(i != 0)
                     {
@@ -433,14 +422,85 @@ namespace MIPS.Sim
             if (!foundRegister)
             {
                 gui.ReportError("Error: Invalid register");
-                gui.SendLog("On Line: " + CurrentLine);
             }
             return foundRegister;
         }
 
-        public int ExecuteInstruction(int instruction)
+        public bool ExecuteInstruction(int instruction)
         {
-            return 0;
+            switch (instruction)
+            {
+                case 0:
+                    add();
+                    break;
+                case 1:
+                    sub();
+                    break;
+                case 2:
+                    and();
+                    break;
+                case 3:
+                    or();
+                    break;
+                case 4:
+                    slt();
+                    break;
+                case 5:
+                    addd();
+                    break;
+                case 6:
+                    ceqd();
+                    break;
+                case 7:
+                    cltd();
+                    break;
+                case 8:
+                    cled();
+                    break;
+                case 9:
+                    subd();
+                    break;
+                case 10:
+                    addi();
+                    break;
+                case 11:
+                    andi();
+                    break;
+                case 12:
+                    ori();
+                    break;
+                case 13:
+                    slti();
+                    break;
+                case 14:
+                    lw();
+                    break;
+                case 15:
+                    sw();
+                    break;
+                case 16:
+                    beq();
+                    break;
+                case 17:
+                    bne();
+                    break;
+                case 18:
+                    j();
+                    break;
+                case 19:
+                    jal();
+                    break;
+                case 20:
+                    bc1t();
+                    break;
+                case 21:
+                    bc1f();
+                    break;
+
+                default:
+                    return false;
+            }
+            return true;
         }
 
         public void Preprocess()

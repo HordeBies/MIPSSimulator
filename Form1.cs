@@ -216,7 +216,7 @@ namespace MIPS
                         break;
                     }
 
-                    backgroundWorker1.ReportProgress(LineIndex);
+                    backgroundWorker1.ReportProgress(simulator.LastLine);
                 }
             }
             else
@@ -224,7 +224,7 @@ namespace MIPS
                 //Thread.Sleep(new TimeSpan(0, 0, 2)); //test
                 LineIndex = simulator.Execute();
                 
-                backgroundWorker1.ReportProgress(LineIndex);
+                backgroundWorker1.ReportProgress(simulator.LastLine);
             }
 
             e.Result = new Tuple<int,bool>(LineIndex,simulator.DoneFlag);
@@ -250,7 +250,7 @@ namespace MIPS
         }
         private void Simulator_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            index = e.ProgressPercentage - 1;
+            index = e.ProgressPercentage;
 
             var test = new BindingSource();
             test.DataSource = simulator.MemoryTable;
@@ -258,7 +258,57 @@ namespace MIPS
             dataGridView6.Update();
             EvaluateSelection(index);
             index++;
+            MetroSetTabControl2.SelectedTab.Controls[0].Refresh();
+            AutoSwitch();
             UpdateButtons();
+        }
+
+        private void AutoSwitch()
+        {
+            if (true)
+            {
+                switch (simulator.args[0])
+                {
+                    case 16:
+                    case 17:
+                    case 18:
+                    case 19:
+                    case 20:
+                    case 21:
+                    case 22:
+                    case 23:
+                        MetroSetTabControl2.SelectTab(0);
+                        break;
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                    case 14:
+                    case 15:
+                    case 24:
+                    case 25:
+                        MetroSetTabControl2.SelectTab(1);
+                        break;
+                    case 2:
+                    case 3:
+                        MetroSetTabControl2.SelectTab(2);
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        MetroSetTabControl2.SelectTab(3);
+                        break;
+                    case 29:
+                        MetroSetTabControl2.SelectTab(4);
+                        break;
+                    default:
+                        MetroSetTabControl2.SelectTab(6);
+                        break;
+                }
+            }
         }
 
         private void Simulator_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

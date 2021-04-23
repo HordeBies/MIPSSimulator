@@ -10,10 +10,12 @@ namespace MIPS.Sim
     {
         public static int StaticMemory = 40400;
         private int memory;
-        public string Label;
+        private string label;
         private int value;
+        public string Label { get => label; set => label = value; }
         public int Memory { get => memory; set => this.memory = value; }
         public int Value { get => value; set => this.value = value; }
+
         public MemoryData()
         {
             memory = StaticMemory;

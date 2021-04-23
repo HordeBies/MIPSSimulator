@@ -309,27 +309,70 @@ namespace MIPS.Sim
 		void subd()
 		{
 			gui.SendLog(args.ToString());
-			throw new NotImplementedException();
+			if (args[0] > 31 && args[1] > 31 && args[2] > 31)
+			{
+				Registers[args[0]].Value = (double.Parse(Registers[args[1]].Value) - double.Parse(Registers[args[2]].Value)).ToString();
+			}
+			else
+			{
+				OpError();
+				return;
+			}
+			
 		}
 		void ceqd()
 		{
-			throw new NotImplementedException();
+			if (args[0] > 31 && args[1] > 31)
+			{
+                FPA = double.Parse(Registers[args[0]].Value).Equals(double.Parse(Registers[args[1]].Value));
+            }
+			else
+			{
+				OpError();
+				return;
+			}
+			
 		}
 		void cltd()
 		{
-			throw new NotImplementedException();
+			if (args[0] > 31 && args[1] > 31 )
+			{
+				FPA = double.Parse(Registers[args[0]].Value) > double.Parse(Registers[args[1]].Value);
+			}
+			else
+			{
+				OpError();
+				return;
+			}
 		}
 		void cled()
 		{
-			throw new NotImplementedException();
+			if (args[0] > 31 && args[1] > 31)
+			{
+				FPA = double.Parse(Registers[args[0]].Value) >= double.Parse(Registers[args[1]].Value);
+				
+			}
+			else
+			{
+				OpError();
+				return;
+			}
 		}
 		void bc1t()
 		{
-			throw new NotImplementedException();
+			if(FPA == true)
+            {
+				LastLine = CurrentLine;
+				CurrentLine = args[0];
+            }
 		}
 		void bc1f()
 		{
-			throw new NotImplementedException();
+			if (FPA == false)
+			{
+				LastLine = CurrentLine;
+				CurrentLine = args[0];
+			}
 		}
 		private bool checkStackBounds(int idx)
         {

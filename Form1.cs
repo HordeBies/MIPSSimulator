@@ -353,5 +353,21 @@ namespace MIPS
             double.TryParse("31.31", out temp);
             SendLog(temp.ToString());
         }
+
+        private void ıconButton2_Click(object sender, EventArgs e)
+        {
+            using (var form = new Credits())
+            {
+                form.ShowDialog();
+            }   
+        }
+
+        private void ıconButton1_Click(object sender, EventArgs e)
+        {
+            using (var form = new Popup())
+            {
+                form.ShowDialog();
+            }
+        }
     }
 }

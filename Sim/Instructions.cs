@@ -33,7 +33,7 @@ namespace MIPS.Sim
 		{
 			if(args[0] == 29)
             {
-				if (!checkStackBounds(Registers[args[1] + args[2]].Value))
+				if (!checkStackBounds(Registers[args[1]].Value + args[2]))
 					return;
             }
 			if(args[0] != 0 && args[0] != 1 && args[1] != 1)
@@ -48,31 +48,110 @@ namespace MIPS.Sim
 		}
 		void sub()
 		{
-			throw new NotImplementedException();
+			if (args[0] == 29)
+			{
+				if (!checkStackBounds(Registers[args[1]].Value - Registers[args[1]].Value))
+					return;
+			}
+			if (args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
+			{
+				Registers[args[0]].Value = Registers[args[1]].Value - Registers[args[2]].Value;
+			}
+			else
+			{
+				OpError();
+			}
 		}
 		void and()
 		{
-			throw new NotImplementedException();
+			if (args[0] == 29)
+			{
+				if (!checkStackBounds(Registers[args[1]].Value & Registers[args[1]].Value))
+					return;
+			}
+			if (args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
+			{
+				Registers[args[0]].Value = Registers[args[1]].Value & Registers[args[2]].Value;
+			}
+			else
+			{
+				OpError();
+			}
 		}
 		void andi()
 		{
-			throw new NotImplementedException();
+			if (args[0] == 29)
+			{
+				if (!checkStackBounds(Registers[args[1] ].Value & args[2]))
+					return;
+			}
+			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
+			{
+				Registers[args[0]].Value = Registers[args[1]].Value & args[2];
+			}
+			else
+			{
+				OpError();
+				return;
+			}
+
 		}
 		void or()
 		{
-			throw new NotImplementedException();
+			if (args[0] == 29)
+			{
+				if (!checkStackBounds(Registers[args[1]].Value | Registers[args[1]].Value))
+					return;
+			}
+			if (args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
+			{
+				Registers[args[0]].Value = Registers[args[1]].Value | Registers[args[2]].Value;
+			}
+			else
+			{
+				OpError();
+			}
 		}
 		void ori()
 		{
-			throw new NotImplementedException();
+			if (args[0] == 29)
+			{
+				if (!checkStackBounds(Registers[args[1]].Value | args[2]))
+					return;
+			}
+			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
+			{
+				Registers[args[0]].Value = Registers[args[1]].Value | args[2];
+			}
+			else
+			{
+				OpError();
+				return;
+			}
 		}
 		void slt()
 		{
-			throw new NotImplementedException();
+			if(args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
+            {
+				Registers[args[0]].Value =(Registers[args[1]].Value < Registers[args[2]].Value) ? 1:0;
+            }
+            else
+            {
+				OpError();
+				return;
+            }
 		}
 		void slti()
 		{
-			throw new NotImplementedException();
+			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
+			{
+				Registers[args[0]].Value = (Registers[args[1]].Value < args[2]) ? 1 : 0;
+			}
+			else
+			{
+				OpError();
+				return;
+			}
 		}
 		void lw()
 		{
@@ -91,18 +170,6 @@ namespace MIPS.Sim
 				return;
             }
 		}
-
-        private bool checkStackBounds(int idx)
-        {
-
-			if (!( idx< 40400 && idx >= 40000))
-            {
-				gui.ReportError("Error: Invalid address for stack pointer");
-				return false;
-            }
-			return true;
-        }
-
         void sw()
 		{
 			if(args[0] != 1 && args[2] == -1)
@@ -131,18 +198,54 @@ namespace MIPS.Sim
 		}
 		void beq()
 		{
-			throw new NotImplementedException();
+			if (args[0] != 1 && args[1] != 1)
+			{
+				LastLine = CurrentLine;
+				if (Registers[args[0]] != Registers[args[1]])
+				{
+					CurrentLine = args[2];
+				}
+				else
+					CurrentLine++;
+            }
+            else
+            {
+				OpError();
+            }
 		}
 		void bne()
 		{
-			throw new NotImplementedException();
+			if(args[0] != 1 && args[1] != 1)
+            {
+				LastLine = CurrentLine;
+				if (Registers[args[0]] != Registers[args[1]])
+				{
+					CurrentLine = args[2];
+				}
+				else
+					CurrentLine++;
+            }
+			else
+			{
+				OpError();
+			}
 		}
 		void j()
 		{
 			LastLine = CurrentLine;
 			CurrentLine = args[0];
 		}
+		void jal()
+		{
+			LastLine = CurrentLine;
+			Registers[31].Value = CurrentLine + 1;
+			CurrentLine = args[0];
+		}
 		void addd()
+		{
+			throw new NotImplementedException();
+		}
+		void subd()
 		{
 			throw new NotImplementedException();
 		}
@@ -158,16 +261,6 @@ namespace MIPS.Sim
 		{
 			throw new NotImplementedException();
 		}
-		void subd()
-		{
-			throw new NotImplementedException();
-		}
-		void jal()
-		{
-			LastLine = CurrentLine;
-			Registers[31].Value = CurrentLine + 1;
-			CurrentLine = args[0];
-		}
 		void bc1t()
 		{
 			throw new NotImplementedException();
@@ -176,5 +269,15 @@ namespace MIPS.Sim
 		{
 			throw new NotImplementedException();
 		}
+        private bool checkStackBounds(int idx)
+        {
+
+			if (!( idx< 40400 && idx >= 40000))
+            {
+				gui.ReportError("Error: Invalid address for stack pointer");
+				return false;
+            }
+			return true;
+        }
 	}
 }

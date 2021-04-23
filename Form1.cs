@@ -71,6 +71,11 @@ namespace MIPS
             test.DataSource = simulator.Stack;
             dataGridView1.DataSource = test;
             dataGridView1.Update();
+
+            test = new BindingSource();
+            test.DataSource = simulator.Registers.Skip(32);
+            dataGridView7.DataSource = test;
+            dataGridView7.Update();
         }
         private int index = 0;
 
@@ -340,6 +345,13 @@ namespace MIPS
         {
             if (!richTextBox1.Lines.SequenceEqual(simulator.InputText) || !richTextBox2.Lines.SequenceEqual(simulator.InputData))
                 Stop(null, null);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            double temp;
+            double.TryParse("31.31", out temp);
+            SendLog(temp.ToString());
         }
     }
 }

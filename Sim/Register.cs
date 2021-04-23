@@ -9,16 +9,16 @@ namespace MIPS.Sim
     public class Register
     {
         private string label;
-        private int value;
+        private string value;
 
-        public Register(string label,int value)
+        public Register(string label,string value)
         {
             this.Label = label;
             this.Value = value;
         }
 
         public string Label { get => label; set => label = value; }
-        public int Value { get => value; set => this.value = value; }
+        public string Value { get => value; set => this.value = value; }
 
 
     }

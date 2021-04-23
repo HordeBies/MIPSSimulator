@@ -35,15 +35,15 @@ namespace MIPS.Sim
             string[] tempRegisters = new string[]{"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp","$fp","$ra"};
             for (int i = 0; i < tempRegisters.Length; i++)
             {
-                Registers.Add(new Register(tempRegisters[i], 0));
+                Registers.Add(new Register(tempRegisters[i], "0"));
             }
             for(int i = 0; i< 32; i++)
             {
-                Registers.Add(new Register("$f" + i, 0));
+                Registers.Add(new Register("$"+ (i < 10 ? "0" : "") + i, "0"));
             }
 
             string[] tempInstructionSet = new string[] { "add", "sub", "and", "or", "slt", "add.d","c.eq.d","c.lt.d","c.le.d","sub.d",
-                "addi", "andi", "ori", "slti","lw", "sw", "beq", "bne", "j", "jal","bc1t","bc1f" };
+                "addi", "andi", "ori", "slti","lw", "sw" ,"ldc1","sdc1", "beq", "bne", "j", "jal","bc1t","bc1f" };
             InstructionSet = new string[tempInstructionSet.Length];
             for (int i = 0; i < tempInstructionSet.Length; i++)
             {
@@ -53,12 +53,11 @@ namespace MIPS.Sim
             Stack = new List<StackData>(100);
             for (int i = 0; i < 100; i++)
             {
-                Stack.Add(new StackData(0));
+                Stack.Add(new StackData("0"));
             }
-
-            Registers[28].Value = 10000000; //gp
-            Registers[29].Value = 40396; //sp
-            Registers[30].Value = 40396; //fp
+            Registers[28].Value = "10000000"; //gp
+            Registers[29].Value = "40396"; //sp
+            Registers[30].Value = "40396"; //fp
 
 
             InputText = new List<string>(text);
@@ -72,6 +71,7 @@ namespace MIPS.Sim
             InputData = new List<string>(data);
             MemoryTable = new List<MemoryData>();
             MemoryData.StaticMemory = 40400;
+            Registers[29].Value = "40396"; //sp
             LabelTable = new List<LabelData>();
             PreProcessFlag = false;
             DoneFlag = false;
@@ -118,7 +118,7 @@ namespace MIPS.Sim
                     gui.SendLog("on Line: " + CurrentLine.ToString());
                     return CurrentLine;
                 }
-                if (instruction <16 || instruction > 19)
+                if (instruction <18 || instruction > 21)
                 {
                     CurrentLine++;
                     LastLine = CurrentLine - 1;
@@ -180,7 +180,7 @@ namespace MIPS.Sim
                 for(int count = 0; count < 3; count++)
                 {
                     RemoveSpaces(CurrentInstruction);
-                    if (!FindRegister(count))
+                    if (!FindRegister(count ))
                         return -2;
                     RemoveSpaces(CurrentInstruction);
                     if (count == 2)
@@ -211,7 +211,7 @@ namespace MIPS.Sim
                     return -2;
                 }
                 args[2] = temp;
-            }else if (OperationID < 16) // lw sw
+            }else if (OperationID < 18) // lw sw ldc1 sdc1
             {
                 string tempString = "";
                 int offset;
@@ -294,7 +294,7 @@ namespace MIPS.Sim
                     args[2] = -1;
                 }
                 
-            }else if(OperationID < 18) // beq bne
+            }else if(OperationID < 20) // beq bne
             {
                 for(int count = 0; count <2; count++)
                 {
@@ -320,7 +320,7 @@ namespace MIPS.Sim
                     gui.ReportError("Error: invalid label");
                     return -2;
                 }
-            }else if(OperationID <22) // j jal bclt bclf
+            }else if(OperationID <24) // j jal bclt bclf
             {
                 RemoveSpaces(CurrentInstruction);
                 bool found = false;
@@ -479,21 +479,27 @@ namespace MIPS.Sim
                     sw();
                     break;
                 case 16:
-                    beq();
+                    ldc1();
                     break;
                 case 17:
-                    bne();
+                    sdc1();
                     break;
                 case 18:
-                    j();
+                    beq();
                     break;
                 case 19:
-                    jal();
+                    bne();
                     break;
                 case 20:
-                    bc1t();
+                    j();
                     break;
                 case 21:
+                    jal();
+                    break;
+                case 22:
+                    bc1t();
+                    break;
+                case 23:
                     bc1f();
                     break;
 
@@ -577,6 +583,9 @@ namespace MIPS.Sim
                         floatFlag = false;
                         Index = wordIndex;
                     }
+                    tempMemory.floatFlag = floatFlag;
+                    if (tempMemory.floatFlag)
+                        MemoryData.StaticMemory += 4;
                     if (!OnlySpaces(LabelIndex + 1, Index, CurrentInstruction))
                         return;
                     bool foundValue = false;

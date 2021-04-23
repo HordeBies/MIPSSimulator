@@ -12,6 +12,7 @@ namespace MIPS.Sim
         private int memory;
         private string label;
         private string value;
+        public bool floatFlag;
         public string Label { get => label; set => label = value; }
         public int Memory { get => memory; set => this.memory = value; }
         public string Value { get => value; set => this.value = value; }

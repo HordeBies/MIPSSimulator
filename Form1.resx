@@ -129,6 +129,9 @@
 	j op1finish
 
 main:
+	ldc1 $01,ff
+	ldc1 $02,ff2
+	add.d $03,$02,$01
 	lw $t3, value	# Load
 	addi $t2, $zero, 25		# Load
 	add $t4, $t2, $t3	# Add

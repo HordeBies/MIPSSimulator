@@ -9,10 +9,10 @@ namespace MIPS.Sim
     public class StackData
     {
         private static int StaticMemory = 40000;
-        private int value;
+        private string value;
         private int memory;
 
-        public StackData(int value)
+        public StackData(string value)
         {
             Value = value;
             Memory = StaticMemory;
@@ -20,6 +20,6 @@ namespace MIPS.Sim
         }
 
         public int Memory { get => memory; set => memory = value; }
-        public int Value { get => value; set => this.value = value; }
+        public string Value { get => value; set => this.value = value; }
     }
 }

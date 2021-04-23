@@ -17,12 +17,12 @@ namespace MIPS.Sim
 		{
 			if (args[0] == 29)
 			{
-				if (!checkStackBounds(Registers[args[1]].Value + Registers[args[1]].Value))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + int.Parse(Registers[args[1]].Value)))
 					return;
 			} 
 			if(args[0] != 0 && args[0] != 1 &&  args[1] != 1 && args[2] != 1)
             {
-				Registers[args[0]].Value = Registers[args[1]].Value + Registers[args[2]].Value;
+				Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) + int.Parse(Registers[args[2]].Value)).ToString();
             }
             else
             {
@@ -35,12 +35,12 @@ namespace MIPS.Sim
 			if(args[0] == 29)
             {
 				spFlag = true;
-				if (!checkStackBounds(Registers[args[1]].Value + args[2]))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2]))
 					return;
             }
 			if(args[0] != 0 && args[0] != 1 && args[1] != 1)
             {
-				Registers[args[0]].Value = Registers[args[1]].Value + (spFlag?args[2]*4:args[2]);
+				Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) + (spFlag?args[2]*4:args[2])).ToString();
             }
             else
             {
@@ -52,12 +52,12 @@ namespace MIPS.Sim
 		{
 			if (args[0] == 29)
 			{
-				if (!checkStackBounds(Registers[args[1]].Value - Registers[args[1]].Value))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) - int.Parse(Registers[args[1]].Value)))
 					return;
 			}
 			if (args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
 			{
-				Registers[args[0]].Value = Registers[args[1]].Value - Registers[args[2]].Value;
+				Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) - int.Parse(Registers[args[2]].Value)).ToString();
 			}
 			else
 			{
@@ -68,12 +68,12 @@ namespace MIPS.Sim
 		{
 			if (args[0] == 29)
 			{
-				if (!checkStackBounds(Registers[args[1]].Value & Registers[args[1]].Value))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) & int.Parse(Registers[args[1]].Value)))
 					return;
 			}
 			if (args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
 			{
-				Registers[args[0]].Value = Registers[args[1]].Value & Registers[args[2]].Value;
+				Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) & int.Parse(Registers[args[2]].Value)).ToString();
 			}
 			else
 			{
@@ -84,12 +84,12 @@ namespace MIPS.Sim
 		{
 			if (args[0] == 29)
 			{
-				if (!checkStackBounds(Registers[args[1] ].Value & args[2]))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) & args[2]))
 					return;
 			}
 			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
 			{
-				Registers[args[0]].Value = Registers[args[1]].Value & args[2];
+				Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) & args[2]).ToString();
 			}
 			else
 			{
@@ -102,12 +102,12 @@ namespace MIPS.Sim
 		{
 			if (args[0] == 29)
 			{
-				if (!checkStackBounds(Registers[args[1]].Value | Registers[args[1]].Value))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) | int.Parse(Registers[args[1]].Value)))
 					return;
 			}
 			if (args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
 			{
-				Registers[args[0]].Value = Registers[args[1]].Value | Registers[args[2]].Value;
+				Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) | int.Parse(Registers[args[2]].Value)).ToString();
 			}
 			else
 			{
@@ -118,12 +118,12 @@ namespace MIPS.Sim
 		{
 			if (args[0] == 29)
 			{
-				if (!checkStackBounds(Registers[args[1]].Value | args[2]))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) | args[2]))
 					return;
 			}
 			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
 			{
-				Registers[args[0]].Value = Registers[args[1]].Value | args[2];
+				Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) | args[2]).ToString();
 			}
 			else
 			{
@@ -135,7 +135,7 @@ namespace MIPS.Sim
 		{
 			if(args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
             {
-				Registers[args[0]].Value =(Registers[args[1]].Value < Registers[args[2]].Value) ? 1:0;
+				Registers[args[0]].Value =(int.Parse(Registers[args[1]].Value) < int.Parse(Registers[args[2]].Value)) ? "1":"0";
             }
             else
             {
@@ -147,7 +147,7 @@ namespace MIPS.Sim
 		{
 			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
 			{
-				Registers[args[0]].Value = (Registers[args[1]].Value < args[2]) ? 1 : 0;
+				Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) < args[2]) ? "1" : "0";
 			}
 			else
 			{
@@ -164,16 +164,16 @@ namespace MIPS.Sim
             }
 			if(args[0] != 0 && args[0] != 1 && args[2] == -1)
             {
-				Registers[args[0]].Value = args[1];
+				Registers[args[0]].Value = args[1].ToString();
             }
 			else if(args[0] != 0 && args[0] != 1) 
 			{
-				if (!checkStackBounds(Registers[args[1] + args[2]].Value))
+				if (!checkStackBounds(int.Parse(Registers[args[1] + args[2]].Value)))
 				{
 					OpError();
 					return;
 				}
-				int offsetPos = ((Registers[args[1]].Value - 40000) / 4 + args[2] + 1);
+				int offsetPos = ((int.Parse(Registers[args[1]].Value) - 40000) / 4 + args[2] + 1);
 				if (offsetPos > 99 || offsetPos < 0)
 				{
 					OpError();
@@ -194,12 +194,12 @@ namespace MIPS.Sim
 				MemoryTable[args[1]].Value = Registers[args[0]].Value.ToString();
             }else if(args[0] != 1)
             {
-				if (!checkStackBounds(Registers[args[1]].Value + args[2] * 4))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2] * 4))
                 {
 					OpError();
 					return;
                 }
-				int offsetPos = ((Registers[args[1]].Value -40000)/4 + args[2] +1);
+				int offsetPos = ((int.Parse(Registers[args[1]].Value) -40000)/4 + args[2] +1);
 				if (offsetPos > 99 || offsetPos < 0)
                 {
 					OpError();
@@ -255,15 +255,60 @@ namespace MIPS.Sim
 		void jal()
 		{
 			LastLine = CurrentLine;
-			Registers[31].Value = CurrentLine + 1;
+			Registers[31].Value = (CurrentLine + 1).ToString();
 			CurrentLine = args[0];
 		}
-		void addd()
+		void ldc1()
+		{
+			if(args[0] > 31 && args[2] == -1)
+            {
+                if (!MemoryTable[args[1]].floatFlag)
+                {
+					OpError();
+					return;
+                }
+				Registers[args[0]].Value = MemoryTable[args[1]].Value;
+			}else if (args[0] > 31)
+            {
+				if (!checkStackBounds(int.Parse(Registers[args[1] + args[2]].Value)))
+				{
+					OpError();
+					return;
+				}
+				int offsetPos = ((int.Parse(Registers[args[1]].Value) - 40000) / 4 + args[2] + 1);
+				if (offsetPos > 99 || offsetPos < 0)
+				{
+					OpError();
+					return;
+				}
+				Registers[args[0]].Value = Stack[offsetPos].Value;
+			}
+			else
+			{
+				OpError();
+				return;
+			}
+			gui.SendLog(args.ToString());
+		}
+		void sdc1()
 		{
 			throw new NotImplementedException();
 		}
+		void addd()
+		{
+            if (args[0] > 31 && args[1] > 31 && args[2] > 31)
+            {
+				Registers[args[0]].Value = (double.Parse(Registers[args[1]].Value) + double.Parse(Registers[args[2]].Value)).ToString();
+			}
+            else
+            {
+				OpError();
+				return;
+			}
+		}
 		void subd()
 		{
+			gui.SendLog(args.ToString());
 			throw new NotImplementedException();
 		}
 		void ceqd()
@@ -286,7 +331,7 @@ namespace MIPS.Sim
 		{
 			throw new NotImplementedException();
 		}
-        private bool checkStackBounds(int idx)
+		private bool checkStackBounds(int idx)
         {
 
 			if (!( idx< 40400 && idx >= 40000))

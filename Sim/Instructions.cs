@@ -31,14 +31,16 @@ namespace MIPS.Sim
 		}
 		void addi()
 		{
+			bool spFlag = false;
 			if(args[0] == 29)
             {
+				spFlag = true;
 				if (!checkStackBounds(Registers[args[1]].Value + args[2]))
 					return;
             }
 			if(args[0] != 0 && args[0] != 1 && args[1] != 1)
             {
-				Registers[args[0]].Value = Registers[args[1]].Value + args[2];
+				Registers[args[0]].Value = Registers[args[1]].Value + (spFlag?args[2]*4:args[2]);
             }
             else
             {
@@ -164,6 +166,21 @@ namespace MIPS.Sim
             {
 				Registers[args[0]].Value = args[1];
             }
+			else if(args[0] != 0 && args[0] != 1) 
+			{
+				if (!checkStackBounds(Registers[args[1] + args[2]].Value))
+				{
+					OpError();
+					return;
+				}
+				int offsetPos = ((Registers[args[1]].Value - 40000) / 4 + args[2] + 1);
+				if (offsetPos > 99 || offsetPos < 0)
+				{
+					OpError();
+					return;
+				}
+				Registers[args[0]].Value = Stack[offsetPos].Value;
+			}
             else
             {
 				OpError();
@@ -174,7 +191,7 @@ namespace MIPS.Sim
 		{
 			if(args[0] != 1 && args[2] == -1)
             {
-				MemoryTable[args[1]].Value = Registers[args[0]].Value;
+				MemoryTable[args[1]].Value = Registers[args[0]].Value.ToString();
             }else if(args[0] != 1)
             {
 				if (!checkStackBounds(Registers[args[1]].Value + args[2] * 4))

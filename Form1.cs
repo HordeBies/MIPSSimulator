@@ -265,7 +265,7 @@ namespace MIPS
 
         private void AutoSwitch()
         {
-            if (true)
+            if (false)
             {
                 switch (simulator.args[0])
                 {

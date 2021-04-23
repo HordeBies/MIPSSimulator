@@ -277,7 +277,7 @@ namespace MIPS.Sim
                             foundLocation = true;
                             if(OperationID == 14)
                             {
-                                args[1] = MemoryTable[j].Value;
+                                args[1] = int.Parse(MemoryTable[j].Value);
                             }
                             else
                             {
@@ -557,18 +557,32 @@ namespace MIPS.Sim
                         return;
                     MemoryData tempMemory = new MemoryData();
                     tempMemory.Label = tempString;
-                    int wordIndex = CurrentInstruction.IndexOf(".word"); // TODO: Add directives for .asciiz
-                    if(wordIndex == -1)
+                    int wordIndex = CurrentInstruction.IndexOf(".word"); // TODO: Add directives for .float
+                    int floatIndex = CurrentInstruction.IndexOf(".float");
+
+                    if (!(floatIndex != -1 || wordIndex != -1))
                     {
-                        gui.ReportError("Error: .word not found");
+                        gui.ReportError("Error: .word or .float not found");
                         return;
                     }
-                    if (!OnlySpaces(LabelIndex + 1, wordIndex, CurrentInstruction))
+                    bool floatFlag;
+                    int Index;
+                    if (wordIndex == -1)
+                    {
+                        floatFlag = true;
+                        Index = floatIndex;
+                    }
+                    else
+                    {
+                        floatFlag = false;
+                        Index = wordIndex;
+                    }
+                    if (!OnlySpaces(LabelIndex + 1, Index, CurrentInstruction))
                         return;
                     bool foundValue = false;
                     bool doneFinding = false;
                     tempString = "";
-                    for (j = wordIndex + 5; j < CurrentInstruction.Length; j++)
+                    for (j = Index + (floatFlag ? 6:5); j < CurrentInstruction.Length; j++)
                     {
                         char temp = CurrentInstruction.ElementAt(j);
                         if(foundValue && (temp == ' ' || temp == '\t') && !doneFinding)
@@ -590,13 +604,27 @@ namespace MIPS.Sim
                             tempString = tempString + temp;
                         }
                     }
-                    int tempValue;
-                    if(!int.TryParse(tempString,out tempValue))
+                    if (floatFlag)
                     {
-                        gui.ReportError("Error: Number conversion error");
-                        return;
+                        double tempValue;
+                        if (!double.TryParse(tempString, out tempValue))
+                        {
+                            gui.ReportError("Error: Float conversion error");
+                            return;
+                        }
+                        tempMemory.Value = tempString;
+
                     }
-                    tempMemory.Value = tempValue;
+                    else
+                    {
+                        int tempValue;
+                        if(!int.TryParse(tempString,out tempValue))
+                        {
+                            gui.ReportError("Error: Int conversion error");
+                            return;
+                        }
+                        tempMemory.Value = tempString;
+                    }
                     MemoryTable.Add(tempMemory);
                 }
             }

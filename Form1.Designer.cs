@@ -30,6 +30,7 @@ namespace MIPS
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -222,9 +223,7 @@ namespace MIPS
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(304, 308);
             this.richTextBox1.TabIndex = 3;
-            this.richTextBox1.Text = "double:\n\tadd $v1,$a1,$a2\n\tj op1finish\n\nmain:\n\tlw $t3, value\t# Load\n\taddi $t2, $ze" +
-    "ro, 25\t\t# Load\n\tadd $t4, $t2, $t3\t# Add\n\tsw $t4,-5($sp)\n\tadd $a1,$zero,$t4\n\tj do" +
-    "uble\n\top1finish:\n\tsw $a1, Z\t\t#Store";
+            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             this.richTextBox1.TextChanged += new System.EventHandler(this.InputChanged);
             // 
             // metroSetRadioButton1

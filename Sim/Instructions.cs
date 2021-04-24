@@ -338,7 +338,7 @@ namespace MIPS.Sim
 		}
 		void subd()
 		{
-			gui.SendLog(args.ToString());
+			
 			if (args[0] > 31 && args[1] > 31 && args[2] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0 && args[2] % 2 == 0)
 			{
 				string res = (double.Parse(Registers[args[1]].Value) - double.Parse(Registers[args[2]].Value)).ToString();

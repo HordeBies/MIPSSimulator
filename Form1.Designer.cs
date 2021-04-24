@@ -95,7 +95,6 @@ namespace MIPS
             this.ıconButton1 = new FontAwesome.Sharp.IconButton();
             this.ıconButton2 = new FontAwesome.Sharp.IconButton();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.button1 = new System.Windows.Forms.Button();
             this.metroSetDivider1 = new MetroSet_UI.Controls.MetroSetDivider();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -987,16 +986,6 @@ namespace MIPS
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.Simulator_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.Simulator_RunWorkerCompleted);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(325, 73);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 16;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // metroSetDivider1
             // 
             this.metroSetDivider1.IsDerivedStyle = true;
@@ -1039,7 +1028,6 @@ namespace MIPS
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.metroSetDivider1);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.StopButton);
             this.Controls.Add(this.PauseButton);
@@ -1116,7 +1104,6 @@ namespace MIPS
         private MetroSet_UI.Child.MetroSetSetTabPage metroSetSetTabPage9;
         private System.Windows.Forms.DataGridView dataGridView6;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Button button1;
         private MetroSet_UI.Child.MetroSetSetTabPage metroSetSetTabPage10;
         private System.Windows.Forms.DataGridView dataGridView7;
         private MetroSet_UI.Controls.MetroSetDivider metroSetDivider1;

@@ -218,7 +218,7 @@ namespace MIPS.Sim
 			if (args[0] != 1 && args[1] != 1)
 			{
 				LastLine = CurrentLine;
-				if (Registers[args[0]] != Registers[args[1]])
+				if (int.Parse(Registers[args[0]].Value) == int.Parse(Registers[args[1]].Value))
 				{
 					CurrentLine = args[2];
 				}
@@ -230,12 +230,12 @@ namespace MIPS.Sim
 				OpError();
             }
 		}
-		void bne()
+		void blt()
 		{
 			if(args[0] != 1 && args[1] != 1)
             {
 				LastLine = CurrentLine;
-				if (Registers[args[0]] != Registers[args[1]])
+				if ((int.Parse((Registers[args[0]].Value))) < (int.Parse(Registers[args[1]].Value)))
 				{
 					CurrentLine = args[2];
 				}

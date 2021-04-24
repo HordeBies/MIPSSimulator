@@ -47,7 +47,7 @@ namespace MIPS.Sim
             string[] tempInstructionSet = new string[] { "add", "sub", "and", "or", "slt", "add.d","sub.d","mul.d","div.d","c.eq.d","c.lt.d","mult","div"
                                                         ,"addi", "andi", "ori", "slti"
                                                         ,"lw", "sw","ldc1","sdc1"
-                                                        , "beq", "bne"
+                                                        , "beq", "blt"
                                                         , "j","bc1t","bc1f"
                                                         ,"mflo" ,"mfhi" };
             InstructionSet = new string[tempInstructionSet.Length];
@@ -300,7 +300,7 @@ namespace MIPS.Sim
                     args[2] = -1;
                 }
                 
-            }else if(OperationID < 23) // beq bne
+            }else if(OperationID < 23) // beq blt
             {
                 for(int count = 0; count <2; count++)
                 {
@@ -510,7 +510,7 @@ namespace MIPS.Sim
                     beq();
                     break;
                 case 22:
-                    bne();
+                    blt();
                     break;
                 case 23:
                     j();

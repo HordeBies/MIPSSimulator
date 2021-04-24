@@ -24,6 +24,8 @@ namespace MIPS.Sim
         bool PreProcessFlag = false;
         public int[] args = new int[3]; //register names,values... for the instruction.
         bool FPA = false;
+        public int MFLO = 0;
+        public int MFHI = 0;
         public void InputChanged() => PreProcessFlag = true;
 
         public MIPSSimulator(string[] text,string[] data, Form1 sender)
@@ -42,8 +44,12 @@ namespace MIPS.Sim
                 Registers.Add(new Register("$"+ (i < 10 ? "0" : "") + i, "0"));
             }
 
-            string[] tempInstructionSet = new string[] { "add", "sub", "and", "or", "slt", "add.d","c.eq.d","c.lt.d","c.le.d","sub.d",
-                "addi", "andi", "ori", "slti","lw", "sw" ,"ldc1","sdc1", "beq", "bne", "j", "jal","bc1t","bc1f" };
+            string[] tempInstructionSet = new string[] { "add", "sub", "and", "or", "slt", "add.d","sub.d","mul.d","div.d","c.eq.d","c.lt.d","mult","div"
+                                                        ,"addi", "andi", "ori", "slti"
+                                                        ,"lw", "sw","ldc1","sdc1"
+                                                        , "beq", "bne"
+                                                        , "j","bc1t","bc1f"
+                                                        ,"mflo" ,"mfhi" };
             InstructionSet = new string[tempInstructionSet.Length];
             for (int i = 0; i < tempInstructionSet.Length; i++)
             {
@@ -118,7 +124,7 @@ namespace MIPS.Sim
                     gui.SendLog("on Line: " + CurrentLine.ToString());
                     return CurrentLine;
                 }
-                if (instruction <18 || instruction > 21)
+                if (instruction <26 || instruction > 20)
                 {
                     CurrentLine++;
                     LastLine = CurrentLine - 1;
@@ -175,15 +181,15 @@ namespace MIPS.Sim
                 gui.ReportError("Error:Unknown operation");
                 return -2;
             }
-            if(OperationID < 10) // R Format
+            if(OperationID < 13) // R Format
             {
-                for(int count = 0; count < 3; count++)
+                for(int count = 0; count < 3 - (OperationID > 8 ? 1: 0); count++)
                 {
                     RemoveSpaces(CurrentInstruction);
                     if (!FindRegister(count ))
                         return -2;
                     RemoveSpaces(CurrentInstruction);
-                    if (count == 2)
+                    if (count == 2 - (OperationID > 8 ? 1 : 0))
                         break;
                     if (!assertRemoveComma())
                         return -2;
@@ -193,7 +199,7 @@ namespace MIPS.Sim
                     gui.ReportError("Error: Extra arguments provided");
                     return -2;
                 }
-            }else if(OperationID < 14) // I format
+            }else if(OperationID < 17) // I format
             {
                 for(int count = 0; count < 2; count++)
                 {
@@ -211,7 +217,7 @@ namespace MIPS.Sim
                     return -2;
                 }
                 args[2] = temp;
-            }else if (OperationID < 18) // lw sw ldc1 sdc1
+            }else if (OperationID < 21) // lw sw ldc1 sdc1
             {
                 string tempString = "";
                 int offset;
@@ -294,7 +300,7 @@ namespace MIPS.Sim
                     args[2] = -1;
                 }
                 
-            }else if(OperationID < 20) // beq bne
+            }else if(OperationID < 23) // beq bne
             {
                 for(int count = 0; count <2; count++)
                 {
@@ -320,7 +326,7 @@ namespace MIPS.Sim
                     gui.ReportError("Error: invalid label");
                     return -2;
                 }
-            }else if(OperationID <24) // j jal bclt bclf
+            }else if(OperationID <26) // j bclt bclf
             {
                 RemoveSpaces(CurrentInstruction);
                 bool found = false;
@@ -338,6 +344,13 @@ namespace MIPS.Sim
                     gui.ReportError("Error: invalid label");
                     return -2;
                 }
+            }else if(OperationID < 28) // mflo mfhi
+            {
+                RemoveSpaces(CurrentInstruction);
+                if (!FindRegister(0))
+                    return -2;
+                if (!OnlySpaces(0, CurrentInstruction.Length, CurrentInstruction))
+                    return -2;
             }
 
             return OperationID;
@@ -449,60 +462,71 @@ namespace MIPS.Sim
                     addd();
                     break;
                 case 6:
-                    ceqd();
-                    break;
-                case 7:
-                    cltd();
-                    break;
-                case 8:
-                    cled();
-                    break;
-                case 9:
                     subd();
                     break;
+                case 7:
+                    muld();
+                    break;
+                case 8:
+                    divd();
+                    break;
+                case 9:
+                    ceqd();
+                    break;
                 case 10:
-                    addi();
+                    cltd();
                     break;
                 case 11:
-                    andi();
+                    mult();
                     break;
                 case 12:
-                    ori();
+                    div();
                     break;
                 case 13:
-                    slti();
+                    addi();
                     break;
                 case 14:
-                    lw();
+                    andi();
                     break;
                 case 15:
-                    sw();
+                    ori();
                     break;
                 case 16:
-                    ldc1();
+                    slti();
                     break;
                 case 17:
-                    sdc1();
+                    lw();
                     break;
                 case 18:
-                    beq();
+                    sw();
                     break;
                 case 19:
-                    bne();
+                    ldc1();
                     break;
                 case 20:
-                    j();
+                    sdc1();
                     break;
                 case 21:
-                    jal();
+                    beq();
                     break;
                 case 22:
-                    bc1t();
+                    bne();
                     break;
                 case 23:
+                    j();
+                    break;
+                case 24:
+                    bc1t();
+                    break;
+                case 25:
                     bc1f();
                     break;
-
+                case 26:
+                    mflo();
+                    break;
+                case 27:
+                    mfhi();
+                    break;
                 default:
                     return false;
             }

@@ -110,6 +110,7 @@ namespace MIPS
             this.Controls.Add(this.metroSetControlBox1);
             this.Controls.Add(this.metroSetPanel2);
             this.Name = "Credits";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Style = MetroSet_UI.Enums.Style.Dark;
             this.StyleManager = this.styleManager1;
             this.TextColor = System.Drawing.Color.White;

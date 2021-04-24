@@ -123,18 +123,17 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>286, 17</value>
   </metadata>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>286, 17</value>
-  </metadata>
   <data name="richTextBox1.Text" xml:space="preserve">
     <value>double:
 	add $v1,$a1,$a2
 	j op1finish
 
 main:
-	ldc1 $01,ff
+	ldc1 $00,ff
 	ldc1 $02,ff2
-	add.d $03,$02,$01
+	add.d $04,$02,$00
+	sdc1 $04, -3($sp)
+	ldc1 $06,-3($sp)
 	lw $t3, value	# Load
 	addi $t2, $zero, 25		# Load
 	add $t4, $t2, $t3	# Add

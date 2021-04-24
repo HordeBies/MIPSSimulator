@@ -252,12 +252,6 @@ namespace MIPS.Sim
 			LastLine = CurrentLine;
 			CurrentLine = args[0];
 		}
-		void jal()
-		{
-			LastLine = CurrentLine;
-			Registers[31].Value = (CurrentLine + 1).ToString();
-			CurrentLine = args[0];
-		}
 		void ldc1()
 		{
 			if(args[0] > 31 && args[2] == -1)
@@ -268,9 +262,11 @@ namespace MIPS.Sim
 					return;
                 }
 				Registers[args[0]].Value = MemoryTable[args[1]].Value;
-			}else if (args[0] > 31)
+				Registers[args[0]+1].Value = MemoryTable[args[1]].Value;
+			}
+			else if (args[0] > 31)
             {
-				if (!checkStackBounds(int.Parse(Registers[args[1] + args[2]].Value)))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2]*4))
 				{
 					OpError();
 					return;
@@ -281,26 +277,60 @@ namespace MIPS.Sim
 					OpError();
 					return;
 				}
-				Registers[args[0]].Value = Stack[offsetPos].Value;
+				if(Stack[offsetPos].Value == Stack[offsetPos - 1].Value)
+                {
+					Registers[args[0]].Value = Stack[offsetPos].Value;
+					Registers[args[0]+1].Value = Stack[offsetPos].Value;
+				}
+				else
+                {
+                    OpError();
+                }
+				
 			}
 			else
 			{
 				OpError();
 				return;
 			}
-			gui.SendLog(args.ToString());
 		}
 		void sdc1()
 		{
-			throw new NotImplementedException();
+			if (args[0] > 31 && args[2] == -1)
+            {
+				if (!MemoryTable[args[1]].floatFlag)
+				{
+					OpError();
+					return;
+				}
+				MemoryTable[args[1]].Value = Registers[args[0]].Value ;
+			}
+			else if (args[0] > 31)
+			{
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2]*4))
+				{
+					OpError();
+					return;
+				}
+				int offsetPos = ((int.Parse(Registers[args[1]].Value) - 40000) / 4 + args[2] + 1);
+				if (offsetPos > 99 || offsetPos < 0 || offsetPos-1 <0 || offsetPos -1 > 99)
+				{
+					OpError();
+					return;
+				}
+				Stack[offsetPos].Value = Registers[args[0]].Value;
+				Stack[offsetPos-1].Value = Registers[args[0]].Value;
+			}
 		}
 		void addd()
 		{
-            if (args[0] > 31 && args[1] > 31 && args[2] > 31)
+            if (args[0] > 31 && args[1] > 31 && args[2] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0 && args[2] % 2 == 0)
             {
-				Registers[args[0]].Value = (double.Parse(Registers[args[1]].Value) + double.Parse(Registers[args[2]].Value)).ToString();
+				string res = (double.Parse(Registers[args[1]].Value) + double.Parse(Registers[args[2]].Value)).ToString();
+				Registers[args[0]].Value = res;
+				Registers[args[0]+1].Value = res;
 			}
-            else
+			else
             {
 				OpError();
 				return;
@@ -309,9 +339,11 @@ namespace MIPS.Sim
 		void subd()
 		{
 			gui.SendLog(args.ToString());
-			if (args[0] > 31 && args[1] > 31 && args[2] > 31)
+			if (args[0] > 31 && args[1] > 31 && args[2] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0 && args[2] % 2 == 0)
 			{
-				Registers[args[0]].Value = (double.Parse(Registers[args[1]].Value) - double.Parse(Registers[args[2]].Value)).ToString();
+				string res = (double.Parse(Registers[args[1]].Value) - double.Parse(Registers[args[2]].Value)).ToString();
+				Registers[args[0]].Value = res;
+				Registers[args[0]+1].Value = res;
 			}
 			else
 			{
@@ -320,32 +352,7 @@ namespace MIPS.Sim
 			}
 			
 		}
-		void ceqd()
-		{
-			if (args[0] > 31 && args[1] > 31)
-			{
-                FPA = double.Parse(Registers[args[0]].Value).Equals(double.Parse(Registers[args[1]].Value));
-            }
-			else
-			{
-				OpError();
-				return;
-			}
-			
-		}
-		void cltd()
-		{
-			if (args[0] > 31 && args[1] > 31 )
-			{
-				FPA = double.Parse(Registers[args[0]].Value) > double.Parse(Registers[args[1]].Value);
-			}
-			else
-			{
-				OpError();
-				return;
-			}
-		}
-		void cled()
+		void divd()
 		{
 			if (args[0] > 31 && args[1] > 31)
 			{
@@ -358,20 +365,103 @@ namespace MIPS.Sim
 				return;
 			}
 		}
+		void muld()
+		{
+			if (args[0] > 31 && args[1] > 31)
+			{
+				FPA = double.Parse(Registers[args[0]].Value) >= double.Parse(Registers[args[1]].Value);
+
+			}
+			else
+			{
+				OpError();
+				return;
+			}
+		}
+		void ceqd()
+		{
+			if (args[0] > 31 && args[1] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0)
+			{
+                FPA = double.Parse(Registers[args[0]].Value).Equals(double.Parse(Registers[args[1]].Value));
+            }
+			else
+			{
+				OpError();
+				return;
+			}
+			
+		}
+		void cltd()
+		{
+			if (args[0] > 31 && args[1] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0)
+			{
+				FPA = double.Parse(Registers[args[0]].Value) < double.Parse(Registers[args[1]].Value);
+			}
+			else
+			{
+				OpError();
+				return;
+			}
+		}
 		void bc1t()
 		{
+			LastLine = CurrentLine;
 			if(FPA == true)
             {
-				LastLine = CurrentLine;
 				CurrentLine = args[0];
+            }
+            else
+            {
+				CurrentLine++;
             }
 		}
 		void bc1f()
 		{
+			LastLine = CurrentLine;
 			if (FPA == false)
 			{
-				LastLine = CurrentLine;
 				CurrentLine = args[0];
+            }
+            else
+            {
+				CurrentLine++;
+            }
+		}
+		void mfhi()
+        {
+			if(args[0] < 31 && args[0] > 1)
+            {
+				Registers[args[0]].Value = MFHI.ToString();
+            }
+        }
+		void mflo()
+		{
+			if (args[0] < 31 && args[0] > 1)
+			{
+				Registers[args[0]].Value = MFLO.ToString();
+			}
+		}
+		void mult()
+		{
+			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
+			{
+				MFLO =(int.Parse(Registers[args[0]].Value) + int.Parse(Registers[args[1]].Value));
+			}
+			else
+			{
+				OpError();
+			}
+		}
+		void div()
+		{
+			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
+			{
+				MFLO = (int.Parse(Registers[args[0]].Value) + int.Parse(Registers[args[1]].Value));
+				MFHI = (int.Parse(Registers[args[0]].Value) % int.Parse(Registers[args[1]].Value));
+			}
+			else
+			{
+				OpError();
 			}
 		}
 		private bool checkStackBounds(int idx)

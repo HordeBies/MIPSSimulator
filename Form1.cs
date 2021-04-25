@@ -373,6 +373,7 @@ namespace MIPS
         private void Reset(object sender, EventArgs e)
         {
             simulator.Reset(richTextBox1.Lines, richTextBox2.Lines);
+            MetroSetTabControl2.SelectedTab.Controls[0].Refresh();
         }
     }
 }

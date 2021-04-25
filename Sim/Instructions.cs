@@ -35,7 +35,7 @@ namespace MIPS.Sim
 			if(args[0] == 29)
             {
 				spFlag = true;
-				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2]))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2]*4))
 					return;
             }
 			if(args[0] != 0 && args[0] != 1 && args[1] != 1)
@@ -159,20 +159,15 @@ namespace MIPS.Sim
 		{
 			if(args[0] == 29)
             {
-				if (!checkStackBounds(args[1]))
+				if (!checkStackBounds(int.Parse(Registers[args[1]].Value + args[2]*4)))
 					return;
             }
 			if(args[0] != 0 && args[0] != 1 && args[2] == -1)
             {
-				Registers[args[0]].Value = args[1].ToString();
+				Registers[args[0]].Value = MemoryTable[args[1]].Value;
             }
 			else if(args[0] != 0 && args[0] != 1) 
 			{
-				if (!checkStackBounds(int.Parse(Registers[args[1] + args[2]].Value)))
-				{
-					OpError();
-					return;
-				}
 				int offsetPos = ((int.Parse(Registers[args[1]].Value) - 40000) / 4 + args[2] + 1);
 				if (offsetPos > 99 || offsetPos < 0)
 				{
@@ -354,10 +349,11 @@ namespace MIPS.Sim
 		}
 		void divd()
 		{
-			if (args[0] > 31 && args[1] > 31)
+			if (args[0] > 31 && args[1] > 31 && args[2] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0 && args[2] % 2 == 0)
 			{
-				FPA = double.Parse(Registers[args[0]].Value) >= double.Parse(Registers[args[1]].Value);
-				
+				string res = (double.Parse(Registers[args[1]].Value) / double.Parse(Registers[args[2]].Value)).ToString();
+				Registers[args[0]].Value = res;
+				Registers[args[0] + 1].Value = res;
 			}
 			else
 			{
@@ -367,10 +363,11 @@ namespace MIPS.Sim
 		}
 		void muld()
 		{
-			if (args[0] > 31 && args[1] > 31)
+			if (args[0] > 31 && args[1] > 31 && args[2] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0 && args[2] % 2 == 0)
 			{
-				FPA = double.Parse(Registers[args[0]].Value) >= double.Parse(Registers[args[1]].Value);
-
+				string res = (double.Parse(Registers[args[1]].Value) * double.Parse(Registers[args[2]].Value)).ToString();
+				Registers[args[0]].Value = res;
+				Registers[args[0] + 1].Value = res;
 			}
 			else
 			{
@@ -445,7 +442,12 @@ namespace MIPS.Sim
 		{
 			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
 			{
-				MFLO =(int.Parse(Registers[args[0]].Value) + int.Parse(Registers[args[1]].Value));
+				long a = int.Parse(Registers[args[0]].Value);
+                long b = int.Parse(Registers[args[1]].Value);
+				long c = a * b;
+				long hi = (c >> 32);
+				MFLO = (int)(c);
+				MFHI = (int)(hi);
 			}
 			else
 			{
@@ -456,7 +458,7 @@ namespace MIPS.Sim
 		{
 			if (args[0] != 0 && args[0] != 1 && args[1] != 1)
 			{
-				MFLO = (int.Parse(Registers[args[0]].Value) + int.Parse(Registers[args[1]].Value));
+				MFLO = (int.Parse(Registers[args[0]].Value) / int.Parse(Registers[args[1]].Value));
 				MFHI = (int.Parse(Registers[args[0]].Value) % int.Parse(Registers[args[1]].Value));
 			}
 			else

@@ -29,10 +29,12 @@ namespace MIPS
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Credits));
             this.styleManager1 = new MetroSet_UI.Components.StyleManager();
             this.metroSetPanel2 = new MetroSet_UI.Controls.MetroSetPanel();
             this.metroSetLabel1 = new MetroSet_UI.Controls.MetroSetLabel();
             this.metroSetControlBox1 = new MetroSet_UI.Controls.MetroSetControlBox();
+            this.metroSetLabel2 = new MetroSet_UI.Controls.MetroSetLabel();
             this.metroSetPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,13 +66,13 @@ namespace MIPS
             // 
             this.metroSetLabel1.Font = new System.Drawing.Font("Bodoni MT", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.metroSetLabel1.IsDerivedStyle = true;
-            this.metroSetLabel1.Location = new System.Drawing.Point(206, 6);
+            this.metroSetLabel1.Location = new System.Drawing.Point(148, 10);
             this.metroSetLabel1.Name = "metroSetLabel1";
-            this.metroSetLabel1.Size = new System.Drawing.Size(390, 36);
+            this.metroSetLabel1.Size = new System.Drawing.Size(506, 36);
             this.metroSetLabel1.Style = MetroSet_UI.Enums.Style.Dark;
             this.metroSetLabel1.StyleManager = this.styleManager1;
             this.metroSetLabel1.TabIndex = 0;
-            this.metroSetLabel1.Text = "CREDITS";
+            this.metroSetLabel1.Text = "CREDITS and INSTRUCTIONS";
             this.metroSetLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.metroSetLabel1.ThemeAuthor = "Narwin";
             this.metroSetLabel1.ThemeName = "MetroDark";
@@ -84,7 +86,7 @@ namespace MIPS
             this.metroSetControlBox1.DisabledForeColor = System.Drawing.Color.Silver;
             this.metroSetControlBox1.IsDerivedStyle = true;
             this.metroSetControlBox1.Location = new System.Drawing.Point(701, 5);
-            this.metroSetControlBox1.MaximizeBox = true;
+            this.metroSetControlBox1.MaximizeBox = false;
             this.metroSetControlBox1.MaximizeHoverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             this.metroSetControlBox1.MaximizeHoverForeColor = System.Drawing.Color.Gray;
             this.metroSetControlBox1.MaximizeNormalForeColor = System.Drawing.Color.Gray;
@@ -101,12 +103,27 @@ namespace MIPS
             this.metroSetControlBox1.ThemeAuthor = "Narwin";
             this.metroSetControlBox1.ThemeName = "MetroDark";
             // 
+            // metroSetLabel2
+            // 
+            this.metroSetLabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.metroSetLabel2.IsDerivedStyle = true;
+            this.metroSetLabel2.Location = new System.Drawing.Point(66, 100);
+            this.metroSetLabel2.Name = "metroSetLabel2";
+            this.metroSetLabel2.Size = new System.Drawing.Size(719, 338);
+            this.metroSetLabel2.Style = MetroSet_UI.Enums.Style.Dark;
+            this.metroSetLabel2.StyleManager = this.styleManager1;
+            this.metroSetLabel2.TabIndex = 3;
+            this.metroSetLabel2.Text = resources.GetString("metroSetLabel2.Text");
+            this.metroSetLabel2.ThemeAuthor = "Narwin";
+            this.metroSetLabel2.ThemeName = "MetroDark";
+            // 
             // Credits
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.metroSetLabel2);
             this.Controls.Add(this.metroSetControlBox1);
             this.Controls.Add(this.metroSetPanel2);
             this.Name = "Credits";
@@ -126,5 +143,6 @@ namespace MIPS
         private MetroSet_UI.Controls.MetroSetControlBox metroSetControlBox1;
         private MetroSet_UI.Controls.MetroSetPanel metroSetPanel2;
         private MetroSet_UI.Controls.MetroSetLabel metroSetLabel1;
+        private MetroSet_UI.Controls.MetroSetLabel metroSetLabel2;
     }
 }

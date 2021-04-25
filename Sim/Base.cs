@@ -124,7 +124,7 @@ namespace MIPS.Sim
                     gui.SendLog("on Line: " + CurrentLine.ToString());
                     return CurrentLine;
                 }
-                if (instruction <26 || instruction > 20)
+                if (!(instruction <26 && instruction > 20))
                 {
                     CurrentLine++;
                     LastLine = CurrentLine - 1;
@@ -281,14 +281,8 @@ namespace MIPS.Sim
                         if(tempString == MemoryTable[j].Label)
                         {
                             foundLocation = true;
-                            if(OperationID == 14)
-                            {
-                                args[1] = int.Parse(MemoryTable[j].Value);
-                            }
-                            else
-                            {
+
                                 args[1] = j;
-                            }
                             break;
                         }
                     }

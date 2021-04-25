@@ -120,4 +120,24 @@
   <metadata name="styleManager1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="metroSetLabel2.Text" xml:space="preserve">
+    <value>
+Details:
+	Comments are supported
+	The .data section can contain labels of type .word and .float. 
+	Only integer and float data is suppoerted.
+	The .text section must contain a main label
+	Addresses 40000 to 40396 represent the locations of memory elements for a 100 element stack.
+	Any memory element created in the data section is assigned an address starting from 40400.
+	Program ends when last line executed
+	The registers $zero and $at can not be modified
+	Any label must start with an alphabet, and can contain only numbers and alphabets.
+
+
+
+
+Created by:
+	Mehmet Demirci
+	Kürşat Şahin</value>
+  </data>
 </root>

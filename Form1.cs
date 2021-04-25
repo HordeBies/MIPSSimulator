@@ -369,5 +369,10 @@ namespace MIPS
                 form.ShowDialog();
             }
         }
+
+        private void Reset(object sender, EventArgs e)
+        {
+            simulator.Reset(richTextBox1.Lines, richTextBox2.Lines);
+        }
     }
 }

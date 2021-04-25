@@ -466,15 +466,6 @@ namespace MIPS.Sim
 				OpError();
 			}
 		}
-		private bool checkStackBounds(int idx)
-        {
 
-			if (!( idx< 40400 && idx >= 40000))
-            {
-				gui.ReportError("Error: Invalid address for stack pointer");
-				return false;
-            }
-			return true;
-        }
 	}
 }

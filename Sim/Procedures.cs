@@ -84,7 +84,7 @@ namespace MIPS.Sim
                 else
                 {
                     LabelData tempLabel = new LabelData();
-                    tempLabel.Address = (byte)currentLine;
+                    tempLabel.Address = 0;
                     tempLabel.Label = LabelName;
                     LabelTable.Add(tempLabel);
                 }
@@ -97,11 +97,22 @@ namespace MIPS.Sim
             }
 
             int InstructionCount = 0;
+            int labelIndex = -1;
+            bool assignLabel = false;
             for (int currentLine = 0; currentLine < InputText.Count; currentLine++)
             {
                 ReadInstruction(currentLine);
-                if (CurrentInstruction.IndexOf(":") != -1)
+                RemoveSpaces();
+                if(CurrentInstruction == "")
+                {
                     continue;
+                }
+                if (CurrentInstruction.IndexOf(":") != -1)
+                {
+                    labelIndex++;
+                    assignLabel = true;
+                    continue;
+                }
                 string output = "0";
                 try
                 {
@@ -114,6 +125,11 @@ namespace MIPS.Sim
                 }
                 short value = Convert.ToInt16(output, 2);
                 iMemory[InstructionCount].Value = value;
+                if (assignLabel)
+                {
+                    LabelTable[labelIndex].Address = (byte)InstructionCount;
+                    assignLabel = false;
+                }
                 InstructionCount++;
             }
 

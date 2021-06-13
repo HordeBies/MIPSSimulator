@@ -57,8 +57,6 @@ namespace MIPS
         }
         private void InitDGVbindings()
         {
-            //var test = new BindingSource();
-            //test.DataSource = simulator.Registers.Where(i => i.Label.StartsWith("$s") && !i.Label.EndsWith("sp")).ToList();
             BindingSourceRegs.DataSource = simulator.Registers;
             DGVregs.DataSource = BindingSourceRegs;
             DGVregs.Update();
@@ -149,7 +147,7 @@ namespace MIPS
             int LineIndex;
             if (runFlag)
             {
-                while (!true)
+                while (simulator.iMemory[simulator.CurrentLine].Value != 0)
                 {
                     if (backgroundWorker1.CancellationPending)
                     {

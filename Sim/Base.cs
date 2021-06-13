@@ -15,10 +15,8 @@ namespace MIPS.Sim
         public List<DataMemory> dMemory;
         public List<string> InputText;
         public List<LabelData> LabelTable;
-        string CurrentInstruction;
-        int CurrentLine; // PC
-        bool PreProcessFlag = false; // aka. compile flag
-        public void InputChanged() => PreProcessFlag = true;
+        public string CurrentInstruction;
+        public int CurrentLine; // PC
         public MIPSSimulator(Form1 sender)
         {
             this.gui = sender;

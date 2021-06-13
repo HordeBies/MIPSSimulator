@@ -98,7 +98,7 @@ namespace MIPS.Sim
 
             int InstructionCount = 0;
             int labelIndex = -1;
-            bool assignLabel = false;
+            Queue<LabelData> assignLabel = new Queue<LabelData>();
             for (int currentLine = 0; currentLine < InputText.Count; currentLine++)
             {
                 ReadInstruction(currentLine);
@@ -110,7 +110,7 @@ namespace MIPS.Sim
                 if (CurrentInstruction.IndexOf(":") != -1)
                 {
                     labelIndex++;
-                    assignLabel = true;
+                    assignLabel.Enqueue(LabelTable[labelIndex]);
                     continue;
                 }
                 string output = "0";
@@ -125,10 +125,9 @@ namespace MIPS.Sim
                 }
                 short value = Convert.ToInt16(output, 2);
                 iMemory[InstructionCount].Value = value;
-                if (assignLabel)
+                while (assignLabel.Count > 0)
                 {
-                    LabelTable[labelIndex].Address = (byte)InstructionCount;
-                    assignLabel = false;
+                    assignLabel.Dequeue().Address = (byte)InstructionCount;
                 }
                 InstructionCount++;
             }
@@ -161,8 +160,9 @@ namespace MIPS.Sim
         }
         private string ParseInstruction()
         {
-            throw new Exception("Tried Parsing Label as Instruction");
-            string instruction = "";
+            if(false)
+                throw new Exception("Tried Parsing Label as Instruction");
+            string instruction = "0000000000000000";
             
             //parse instruction as binary 16 bits in string
 

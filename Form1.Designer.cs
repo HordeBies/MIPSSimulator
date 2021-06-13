@@ -31,10 +31,6 @@ namespace MIPS
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -43,16 +39,20 @@ namespace MIPS
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.metroSetControlBox1 = new MetroSet_UI.Controls.MetroSetControlBox();
             this.styleManager1 = new MetroSet_UI.Components.StyleManager();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.MetroSetTabControl2 = new MetroSet_UI.Controls.MetroSetTabControl();
-            this.RegTab = new MetroSet_UI.Child.MetroSetSetTabPage();
-            this.DGVregs = new System.Windows.Forms.DataGridView();
             this.iMemTab = new MetroSet_UI.Child.MetroSetSetTabPage();
             this.DGVim = new System.Windows.Forms.DataGridView();
             this.dMemTab = new MetroSet_UI.Child.MetroSetSetTabPage();
             this.DGVdm = new System.Windows.Forms.DataGridView();
+            this.RegTab = new MetroSet_UI.Child.MetroSetSetTabPage();
+            this.DGVregs = new System.Windows.Forms.DataGridView();
             this.LogTab = new MetroSet_UI.Child.MetroSetSetTabPage();
             this.metroSetListBox1 = new MetroSet_UI.Controls.MetroSetListBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -74,12 +74,12 @@ namespace MIPS
             this.BindingSourceDM = new System.Windows.Forms.BindingSource(this.components);
             this.metroSetRadioButton1 = new MetroSet_UI.Controls.MetroSetRadioButton();
             this.MetroSetTabControl2.SuspendLayout();
-            this.RegTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DGVregs)).BeginInit();
             this.iMemTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGVim)).BeginInit();
             this.dMemTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGVdm)).BeginInit();
+            this.RegTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DGVregs)).BeginInit();
             this.LogTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BindingSourceRegs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BindingSourceIM)).BeginInit();
@@ -157,77 +157,6 @@ namespace MIPS
             this.MetroSetTabControl2.ThemeName = "MetroDark";
             this.MetroSetTabControl2.UnselectedTextColor = System.Drawing.Color.Gray;
             this.MetroSetTabControl2.UseAnimation = false;
-            // 
-            // RegTab
-            // 
-            this.RegTab.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.RegTab.Controls.Add(this.DGVregs);
-            this.RegTab.Font = null;
-            this.RegTab.ImageIndex = 0;
-            this.RegTab.ImageKey = null;
-            this.RegTab.IsDerivedStyle = true;
-            this.RegTab.Location = new System.Drawing.Point(4, 42);
-            this.RegTab.Name = "RegTab";
-            this.RegTab.Size = new System.Drawing.Size(418, 376);
-            this.RegTab.Style = MetroSet_UI.Enums.Style.Dark;
-            this.RegTab.StyleManager = this.styleManager1;
-            this.RegTab.TabIndex = 4;
-            this.RegTab.Text = "Regs";
-            this.RegTab.ThemeAuthor = "Narwin";
-            this.RegTab.ThemeName = "MetroDark";
-            this.RegTab.ToolTipText = null;
-            // 
-            // DGVregs
-            // 
-            this.DGVregs.AllowUserToAddRows = false;
-            this.DGVregs.AllowUserToDeleteRows = false;
-            this.DGVregs.AllowUserToResizeColumns = false;
-            this.DGVregs.AllowUserToResizeRows = false;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.DGVregs.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle9;
-            this.DGVregs.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.DGVregs.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.DGVregs.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGVregs.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
-            this.DGVregs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            dataGridViewCellStyle11.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DGVregs.DefaultCellStyle = dataGridViewCellStyle11;
-            this.DGVregs.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.DGVregs.Location = new System.Drawing.Point(0, 3);
-            this.DGVregs.MultiSelect = false;
-            this.DGVregs.Name = "DGVregs";
-            this.DGVregs.ReadOnly = true;
-            this.DGVregs.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.DGVregs.RowHeadersVisible = false;
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle12.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.White;
-            this.DGVregs.RowsDefaultCellStyle = dataGridViewCellStyle12;
-            this.DGVregs.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.DGVregs.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.DGVregs.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
-            this.DGVregs.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
-            this.DGVregs.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.DGVregs.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.DGVregs.Size = new System.Drawing.Size(418, 370);
-            this.DGVregs.TabIndex = 16;
             // 
             // iMemTab
             // 
@@ -370,6 +299,77 @@ namespace MIPS
             this.DGVdm.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.DGVdm.Size = new System.Drawing.Size(412, 377);
             this.DGVdm.TabIndex = 17;
+            // 
+            // RegTab
+            // 
+            this.RegTab.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.RegTab.Controls.Add(this.DGVregs);
+            this.RegTab.Font = null;
+            this.RegTab.ImageIndex = 0;
+            this.RegTab.ImageKey = null;
+            this.RegTab.IsDerivedStyle = true;
+            this.RegTab.Location = new System.Drawing.Point(4, 42);
+            this.RegTab.Name = "RegTab";
+            this.RegTab.Size = new System.Drawing.Size(418, 376);
+            this.RegTab.Style = MetroSet_UI.Enums.Style.Dark;
+            this.RegTab.StyleManager = this.styleManager1;
+            this.RegTab.TabIndex = 4;
+            this.RegTab.Text = "Regs";
+            this.RegTab.ThemeAuthor = "Narwin";
+            this.RegTab.ThemeName = "MetroDark";
+            this.RegTab.ToolTipText = null;
+            // 
+            // DGVregs
+            // 
+            this.DGVregs.AllowUserToAddRows = false;
+            this.DGVregs.AllowUserToDeleteRows = false;
+            this.DGVregs.AllowUserToResizeColumns = false;
+            this.DGVregs.AllowUserToResizeRows = false;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.DGVregs.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle9;
+            this.DGVregs.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.DGVregs.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.DGVregs.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGVregs.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
+            this.DGVregs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DGVregs.DefaultCellStyle = dataGridViewCellStyle11;
+            this.DGVregs.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.DGVregs.Location = new System.Drawing.Point(0, 3);
+            this.DGVregs.MultiSelect = false;
+            this.DGVregs.Name = "DGVregs";
+            this.DGVregs.ReadOnly = true;
+            this.DGVregs.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.DGVregs.RowHeadersVisible = false;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.White;
+            this.DGVregs.RowsDefaultCellStyle = dataGridViewCellStyle12;
+            this.DGVregs.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.DGVregs.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.DGVregs.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
+            this.DGVregs.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(207)))), ((int)(((byte)(255)))));
+            this.DGVregs.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.DGVregs.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.DGVregs.Size = new System.Drawing.Size(418, 370);
+            this.DGVregs.TabIndex = 16;
             // 
             // LogTab
             // 
@@ -561,7 +561,7 @@ namespace MIPS
             this.CompileButton.Name = "CompileButton";
             this.CompileButton.Size = new System.Drawing.Size(29, 27);
             this.CompileButton.TabIndex = 24;
-            this.toolTip1.SetToolTip(this.CompileButton, "Run the current program");
+            this.toolTip1.SetToolTip(this.CompileButton, "Compile the current program");
             this.CompileButton.UseVisualStyleBackColor = false;
             this.CompileButton.Click += new System.EventHandler(this.CompileButton_Click);
             // 
@@ -662,12 +662,12 @@ namespace MIPS
             this.TextColor = System.Drawing.Color.White;
             this.ThemeName = "MetroDark";
             this.MetroSetTabControl2.ResumeLayout(false);
-            this.RegTab.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.DGVregs)).EndInit();
             this.iMemTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DGVim)).EndInit();
             this.dMemTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DGVdm)).EndInit();
+            this.RegTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DGVregs)).EndInit();
             this.LogTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.BindingSourceRegs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.BindingSourceIM)).EndInit();

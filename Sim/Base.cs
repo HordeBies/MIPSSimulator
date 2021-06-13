@@ -11,63 +11,51 @@ namespace MIPS.Sim
         public Form1 gui;
         public List<Register> Registers;
         string[] InstructionSet;
-        public List<StackData> Stack;
+        public List<InstructionMemory> iMemory;
+        public List<DataMemory> dMemory;
         public List<string> InputText;
-        public List<string> InputData;
+        public List<LabelData> LabelTable;
         string CurrentInstruction;
-        int CurrentLine;
-        public int LastLine;
-        public List<MemoryData> MemoryTable = new List<MemoryData>();
-        List<LabelData> LabelTable = new List<LabelData>();
-        public bool isHalted = false;
-        public bool DoneFlag = false;
-        bool PreProcessFlag = false;
-        public int[] args = new int[3]; //register names,values... for the instruction.
-        bool FPA = false;
-        public int MFLO = 0;
-        public int MFHI = 0;
+        int CurrentLine; // PC
+        bool PreProcessFlag = false; // aka. compile flag
         public void InputChanged() => PreProcessFlag = true;
-        public MIPSSimulator(string[] text,string[] data, Form1 sender)
+        public MIPSSimulator(Form1 sender)
         {
             this.gui = sender;
-            Random rand = new Random(Environment.TickCount);
 
-            Registers = new List<Register>(32);
-            string[] tempRegisters = new string[]{"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp","$fp","$ra"};
-            for (int i = 0; i < tempRegisters.Length; i++)
+
+            Registers = new List<Register>(Register.Count);
+
+            string[] tempRegisters = new string[] { "$zero", "$r0", "$r1", "$r2", "$r3", "$r4", "$sp", "$ra"};
+            for (byte i = 0; i < Register.Count; i++)
             {
-                Registers.Add(new Register(tempRegisters[i], "0"));
-            }
-            for(int i = 0; i< 32; i++)
-            {
-                Registers.Add(new Register("$"+ (i < 10 ? "0" : "") + i, "0"));
+                Registers.Add(new Register(tempRegisters[i], i));
             }
 
-            string[] tempInstructionSet = new string[] { "add", "sub", "and", "or", "slt", "add.d","sub.d","mul.d","div.d","c.eq.d","c.lt.d","mult","div"
-                                                        ,"addi", "andi", "ori", "slti"
-                                                        ,"lw", "sw","ldc1","sdc1"
-                                                        , "beq", "blt"
-                                                        , "j","bc1t","bc1f"
-                                                        ,"mflo" ,"mfhi" };
+            string[] tempInstructionSet = new string[] { "add", "sub", "and", "or", "slt", "mult","slti", "sll","srl","muli","lui"
+                                                        , "lw", "sw"
+                                                        , "beq", "bne"
+                                                        , "jr","j","jal"};
             InstructionSet = new string[tempInstructionSet.Length];
             for (int i = 0; i < tempInstructionSet.Length; i++)
             {
                 InstructionSet[i] = tempInstructionSet[i];
             }
 
-            Stack = new List<StackData>(100);
-            for (int i = 0; i < 100; i++)
+            iMemory = new List<InstructionMemory>(256);
+            for (int i = 0; i < 256; i++)
             {
-                Stack.Add(new StackData("0"));
+                iMemory.Add(new InstructionMemory((byte)i));
             }
-            Registers[28].Value = "10000000"; //gp
-            Registers[29].Value = "40396"; //sp
-            Registers[30].Value = "40396"; //fp
 
+            dMemory = new List<DataMemory>(256);
+            for (int i = 0; i < 256; i++)
+            {
+                dMemory.Add(new DataMemory((byte)i));
+            }
 
-            InputText = new List<string>(text);
-            InputData = new List<string>(data);
-
+            InputText = new List<string>();
+            LabelTable = new List<LabelData>();
         }
         
     }

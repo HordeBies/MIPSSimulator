@@ -6,22 +6,18 @@ using System.Threading.Tasks;
 
 namespace MIPS.Sim
 {
-    public class Register
+    public class DataMemory
     {
-        public static readonly int Count = 8;
-        private string label;
-        public byte id;
+        private byte memory;
         private short value;
         private string binary;
         private string hex;
-
-        public Register(string label, byte id)
+        public DataMemory(byte memory)
         {
-            this.Label = label;
-            this.Value = 0;
+            Memory = memory;
+            Value = 0;
         }
-
-        public string Label { get => label; set => label = value; }
+        public byte Memory { get => memory; set => this.memory = value; }
         public short Value
         {
             get
@@ -37,7 +33,5 @@ namespace MIPS.Sim
         }
         public string Binary { get => binary; }
         public string Hex { get => hex; }
-
-
     }
 }

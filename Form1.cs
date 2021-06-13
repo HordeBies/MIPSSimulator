@@ -42,7 +42,6 @@ namespace MIPS
             if (!(bool)e.Result)
                 return;
             MessageBox.Show(richTextBox1.Text);
-            simulator = simulator;
         }
         public void SendLog(string msg)
         {
@@ -50,6 +49,7 @@ namespace MIPS
         }
         public void ReportError(string err)
         {
+            metroSetListBox1.AddItem(err);
         }
         public void updateState()
         {
@@ -118,10 +118,6 @@ namespace MIPS
                 default:
                     break;
             }
-        }
-        private void UpdateSim()
-        {
-            //simulator.PreLoad(richTextBox1.Lines, richTextBox2.Lines);
         }
         private void Run(object sender, EventArgs e)
         {
@@ -238,7 +234,7 @@ namespace MIPS
         private void button1_Click(object sender, EventArgs e)
         {
             double temp;
-            double.TryParse("31.31", out temp);
+            double.TryParse("13.13", out temp);
             SendLog(temp.ToString());
         }
 

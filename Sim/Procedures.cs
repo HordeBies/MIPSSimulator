@@ -145,7 +145,12 @@ namespace MIPS.Sim
         }
         private string ParseInstruction()
         {
+            throw new Exception("Tried Parsing Label as Instruction");
+            string instruction = "";
+            
+            //parse instruction as binary 16 bits in string
 
+            return instruction;
             //int i = 0, j = 0; //temp vars
 
             //RemoveSpaces(CurrentInstruction);
@@ -355,39 +360,6 @@ namespace MIPS.Sim
             //    if (!OnlySpaces(0, CurrentInstruction.Length, CurrentInstruction))
             //        return -2;
             //}
-
-            return "0000000000000000";
-        }
-        private string findLabel()
-        {
-            //RemoveSpaces(CurrentInstruction);
-            //string tempString = "";
-            //bool foundValue = false;
-            //bool doneFinding = false;
-
-            //for (int j = 0; j < CurrentInstruction.Length; j++)
-            //{
-            //    char temp = CurrentInstruction.ElementAt(j);
-            //    if (foundValue && (temp == ' ' || temp == '\t') && !doneFinding)
-            //    {
-            //        doneFinding = true;
-            //    }
-            //    else if (foundValue && temp != ' ' && temp != '\t' && doneFinding)
-            //    {
-            //        gui.ReportError("Error: Unexpected text after value");
-            //    }
-            //    else if (!foundValue && temp != ' ' && temp != '\t')
-            //    {
-            //        foundValue = true;
-            //        tempString = tempString + temp;
-            //    }
-            //    else if (foundValue && temp != ' ' && temp != '\t')
-            //    {
-            //        tempString = tempString + temp;
-            //    }
-            //}
-
-            return "";
         }
         private bool assertRemoveComma()
         {
@@ -535,8 +507,6 @@ namespace MIPS.Sim
             //}
             return true;
         }
-        
-
         private bool OnlySpaces(int lower, int upper, string str)
         {
             for (int i = lower; i < upper; i++)
@@ -548,30 +518,6 @@ namespace MIPS.Sim
                 }
             }
             return true;
-        }
-        public void Stop(string[] text, string[] data)
-        {
-            PreLoad(text, data);
-        }
-        public void Reset(string[] text, string[] data)
-        {
-            Stop(text, data);
-        }
-        public void PreLoad(string[] text, string[] data)
-        {
-            //isHalted = false;
-            //InputText = new List<string>(text);
-            //InputData = new List<string>(data);
-            //MemoryTable = new List<DataMemory>();
-            //DataMemory.StaticMemory = 40400;
-            //Registers[28].Value = "10000000"; //gp
-            //Registers[29].Value = "40396"; //sp
-            //Registers[30].Value = "40396"; //fp
-            //LabelTable = new List<LabelData>();
-            //PreProcessFlag = false;
-            //DoneFlag = false;
-            //CurrentLine = 0;
-            //CurrentInstruction = "";
         }
     }
 }

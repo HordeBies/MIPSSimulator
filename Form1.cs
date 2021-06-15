@@ -135,7 +135,6 @@ namespace MIPS
             BindingSourceDM.DataSource = simulator.dMemory;
             DGVdm.DataSource = BindingSourceDM;
             DGVdm.Update();
-
         }
         private int index = 0;
 

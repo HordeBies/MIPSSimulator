@@ -74,9 +74,10 @@ namespace MIPS
             this.metroSetRadioButton1 = new MetroSet_UI.Controls.MetroSetRadioButton();
             this.MetroSetTabControl1 = new MetroSet_UI.Controls.MetroSetTabControl();
             this.metroSetSetTabPage1 = new MetroSet_UI.Child.MetroSetSetTabPage();
-            this.metroSetSetTabPage2 = new MetroSet_UI.Child.MetroSetSetTabPage();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.metroSetSetTabPage2 = new MetroSet_UI.Child.MetroSetSetTabPage();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.BindingSourceCompiledText = new System.Windows.Forms.BindingSource(this.components);
             this.MetroSetTabControl2.SuspendLayout();
             this.iMemTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGVim)).BeginInit();
@@ -91,6 +92,7 @@ namespace MIPS
             this.MetroSetTabControl1.SuspendLayout();
             this.metroSetSetTabPage1.SuspendLayout();
             this.metroSetSetTabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BindingSourceCompiledText)).BeginInit();
             this.SuspendLayout();
             // 
             // metroSetControlBox1
@@ -626,7 +628,7 @@ namespace MIPS
             this.metroSetRadioButton1.ThemeAuthor = "Narwin";
             this.metroSetRadioButton1.ThemeName = "MetroDark";
             // 
-            // metroSetTabControl1
+            // MetroSetTabControl1
             // 
             this.MetroSetTabControl1.AnimateEasingType = MetroSet_UI.Enums.EasingType.CubeOut;
             this.MetroSetTabControl1.AnimateTime = 200;
@@ -637,7 +639,7 @@ namespace MIPS
             this.MetroSetTabControl1.IsDerivedStyle = true;
             this.MetroSetTabControl1.ItemSize = new System.Drawing.Size(100, 38);
             this.MetroSetTabControl1.Location = new System.Drawing.Point(26, 145);
-            this.MetroSetTabControl1.Name = "metroSetTabControl1";
+            this.MetroSetTabControl1.Name = "MetroSetTabControl1";
             this.MetroSetTabControl1.SelectedIndex = 0;
             this.MetroSetTabControl1.SelectedTextColor = System.Drawing.Color.White;
             this.MetroSetTabControl1.Size = new System.Drawing.Size(367, 418);
@@ -653,7 +655,7 @@ namespace MIPS
             // 
             // metroSetSetTabPage1
             // 
-            this.metroSetSetTabPage1.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.metroSetSetTabPage1.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
             this.metroSetSetTabPage1.Controls.Add(this.richTextBox1);
             this.metroSetSetTabPage1.Font = null;
             this.metroSetSetTabPage1.ImageIndex = 0;
@@ -662,32 +664,13 @@ namespace MIPS
             this.metroSetSetTabPage1.Location = new System.Drawing.Point(4, 42);
             this.metroSetSetTabPage1.Name = "metroSetSetTabPage1";
             this.metroSetSetTabPage1.Size = new System.Drawing.Size(359, 372);
-            this.metroSetSetTabPage1.Style = MetroSet_UI.Enums.Style.Light;
-            this.metroSetSetTabPage1.StyleManager = null;
+            this.metroSetSetTabPage1.Style = MetroSet_UI.Enums.Style.Dark;
+            this.metroSetSetTabPage1.StyleManager = this.styleManager1;
             this.metroSetSetTabPage1.TabIndex = 0;
             this.metroSetSetTabPage1.Text = "Input";
             this.metroSetSetTabPage1.ThemeAuthor = "Narwin";
-            this.metroSetSetTabPage1.ThemeName = "MetroLite";
+            this.metroSetSetTabPage1.ThemeName = "MetroDark";
             this.metroSetSetTabPage1.ToolTipText = null;
-            // 
-            // metroSetSetTabPage2
-            // 
-            this.metroSetSetTabPage2.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.metroSetSetTabPage2.Controls.Add(this.richTextBox2);
-            this.metroSetSetTabPage2.Font = null;
-            this.metroSetSetTabPage2.ImageIndex = 0;
-            this.metroSetSetTabPage2.ImageKey = null;
-            this.metroSetSetTabPage2.IsDerivedStyle = true;
-            this.metroSetSetTabPage2.Location = new System.Drawing.Point(4, 42);
-            this.metroSetSetTabPage2.Name = "metroSetSetTabPage2";
-            this.metroSetSetTabPage2.Size = new System.Drawing.Size(359, 372);
-            this.metroSetSetTabPage2.Style = MetroSet_UI.Enums.Style.Light;
-            this.metroSetSetTabPage2.StyleManager = null;
-            this.metroSetSetTabPage2.TabIndex = 1;
-            this.metroSetSetTabPage2.Text = "Compiled";
-            this.metroSetSetTabPage2.ThemeAuthor = "Narwin";
-            this.metroSetSetTabPage2.ThemeName = "MetroLite";
-            this.metroSetSetTabPage2.ToolTipText = null;
             // 
             // richTextBox1
             // 
@@ -699,6 +682,25 @@ namespace MIPS
             this.richTextBox1.TabIndex = 27;
             this.richTextBox1.Text = "add $r1 ,$r2 ,$r3\nadd $r2 ,$r2 ,$r3\n\nlabel2:\n\nbne $r1 ,$r2, exit\n\nmuli $r2 ,$r2, " +
     "1\n\nj label2\n\nexit:";
+            // 
+            // metroSetSetTabPage2
+            // 
+            this.metroSetSetTabPage2.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.metroSetSetTabPage2.Controls.Add(this.richTextBox2);
+            this.metroSetSetTabPage2.Font = null;
+            this.metroSetSetTabPage2.ImageIndex = 0;
+            this.metroSetSetTabPage2.ImageKey = null;
+            this.metroSetSetTabPage2.IsDerivedStyle = true;
+            this.metroSetSetTabPage2.Location = new System.Drawing.Point(4, 42);
+            this.metroSetSetTabPage2.Name = "metroSetSetTabPage2";
+            this.metroSetSetTabPage2.Size = new System.Drawing.Size(359, 372);
+            this.metroSetSetTabPage2.Style = MetroSet_UI.Enums.Style.Dark;
+            this.metroSetSetTabPage2.StyleManager = this.styleManager1;
+            this.metroSetSetTabPage2.TabIndex = 1;
+            this.metroSetSetTabPage2.Text = "Compiled";
+            this.metroSetSetTabPage2.ThemeAuthor = "Narwin";
+            this.metroSetSetTabPage2.ThemeName = "MetroDark";
+            this.metroSetSetTabPage2.ToolTipText = null;
             // 
             // richTextBox2
             // 
@@ -756,6 +758,7 @@ namespace MIPS
             this.MetroSetTabControl1.ResumeLayout(false);
             this.metroSetSetTabPage1.ResumeLayout(false);
             this.metroSetSetTabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.BindingSourceCompiledText)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -795,7 +798,8 @@ namespace MIPS
         private MetroSet_UI.Child.MetroSetSetTabPage metroSetSetTabPage1;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private MetroSet_UI.Child.MetroSetSetTabPage metroSetSetTabPage2;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        public System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.BindingSource BindingSourceCompiledText;
     }
 }
 

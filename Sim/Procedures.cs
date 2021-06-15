@@ -15,6 +15,7 @@ namespace MIPS.Sim
         {
             LabelTable = new List<LabelData>();
             iMemoryText = new List<string>();
+            gui.richTextBox2.Lines = iMemoryText.ToArray();
             iMemory.ForEach(i => i.Value = 0);
             Registers.ForEach(i => i.Value = 0);
             Registers[6].Value = 255;
@@ -739,7 +740,6 @@ namespace MIPS.Sim
             //    default:
             //        return false;
             //}
-            return true;
         }
     }
 }

@@ -28,10 +28,22 @@ namespace MIPS.Sim
             {
                 this.value = value;
                 this.hex = value.ToString("X");
-                this.binary = Convert.ToString(value, 2);
+                this.binary = Extend(Convert.ToString(value, 2),16);
             }
         }
         public string Binary { get => binary; }
         public string Hex { get => hex; }
+        private string Extend(string input, int extend)
+        {
+            if (input.Length == extend)
+                return input;
+            string result = "";
+            for (int i = 0; i < extend - input.Length; i++)
+            {
+                result += '0';
+            }
+            result += input;
+            return result;
+        }
     }
 }

@@ -10,11 +10,12 @@ namespace MIPS.Sim
     {
         public Form1 gui;
         public List<Register> Registers;
-        string[] InstructionSet;
+        Dictionary<string,string> InstructionSet;
         public List<InstructionMemory> iMemory;
         public List<DataMemory> dMemory;
         public List<string> InputText;
         public List<LabelData> LabelTable;
+        public List<String> iMemoryText;
         public string CurrentInstruction;
         public int CurrentLine; // PC
         public MIPSSimulator(Form1 sender)
@@ -29,15 +30,19 @@ namespace MIPS.Sim
             {
                 Registers.Add(new Register(tempRegisters[i], i));
             }
+            Registers[6].Value = 255;
 
-            string[] tempInstructionSet = new string[] { "add", "sub", "and", "or", "slt", "mult","slti", "sll","srl","muli","lui"
-                                                        , "lw", "sw"
-                                                        , "beq", "bne"
-                                                        , "jr","j","jal"};
-            InstructionSet = new string[tempInstructionSet.Length];
-            for (int i = 0; i < tempInstructionSet.Length; i++)
+            string[] tempInstructionKeySet = new string[]  { "add", "sub", "and", "or", "slt", "mul", "sll","srl"
+                                                            ,"slti","beq","bne", "muli", "lui", "lw","sw"
+                                                            , "jr","j","jal"};
+            string[] tempInstructionValueSet = new string[]{ "0000", "0000", "0000", "0000", "0000", "0000", "0000","0000"
+                                                            ,"0010","0011","0100", "0101", "0110", "0111","1000"
+                                                            , "0001","1001","1010"};
+            InstructionSet = new Dictionary<string, string>(tempInstructionKeySet.Length);
+            
+            for (int i = 0; i < tempInstructionKeySet.Length; i++)
             {
-                InstructionSet[i] = tempInstructionSet[i];
+                InstructionSet[tempInstructionKeySet[i]] = tempInstructionValueSet[i];
             }
 
             iMemory = new List<InstructionMemory>(256);
@@ -54,6 +59,7 @@ namespace MIPS.Sim
 
             InputText = new List<string>();
             LabelTable = new List<LabelData>();
+            iMemoryText = new List<string>();
         }
         
     }

@@ -42,8 +42,19 @@ namespace MIPS.Sim
             }
             return true;
         }
+        private void Flush()
+        {
+            LabelTable = new List<LabelData>();
+            iMemoryText = new List<string>();
+            iMemory.ForEach(i => i.Value = 0);
+            Registers.ForEach(i => i.Value = 0);
+            Registers[6].Value = 255;
+            gui.ClearLog();
+            CurrentLine = 0;
+        }
         public bool Compile(string[] input)
         {
+            Flush();
             InputText = new List<string>(input);
 
             int LabelIndex;
@@ -114,6 +125,7 @@ namespace MIPS.Sim
                     continue;
                 }
                 string output = "0";
+                iMemoryText.Add(CurrentInstruction);
                 try
                 {
                     output = ParseInstruction();
@@ -121,18 +133,32 @@ namespace MIPS.Sim
                 catch (Exception e)
                 {
                     gui.ReportError("Error: On Parsing Instruction on Line:" + currentLine);
+                    gui.ReportError("\t" + e.Message);
                     return false;
                 }
-                short value = Convert.ToInt16(output, 2);
+                ushort value = Convert.ToUInt16(output, 2);
                 iMemory[InstructionCount].Value = value;
-                while (assignLabel.Count > 0)
-                {
-                    assignLabel.Dequeue().Address = (byte)InstructionCount;
-                }
-                InstructionCount++;
-            }
 
-            CurrentLine = 0;
+                while (assignLabel.Count > 0)
+                    assignLabel.Dequeue().Address = (byte)InstructionCount;
+
+                InstructionCount++;
+                if(InstructionCount == 256)
+                {
+                    gui.ReportError("Error: Can't compile more than 256 instructions: "+ currentLine);
+                    return false;
+                }
+            }
+            iMemory[InstructionCount].Value = 0; //End of Instructions flag in Instruction Memory
+            while (assignLabel.Count > 0)
+                assignLabel.Dequeue().Address = (byte)InstructionCount;
+            LabelTable.ForEach(i =>
+            {
+                if (i.Address >= iMemoryText.Count)
+                    iMemoryText.Add(i.Label+":");
+                else
+                    iMemoryText[i.Address] = i.Label+": " + iMemoryText[i.Address];
+            });
             gui.SendLog("Initialized and ready to execute.");
             gui.updateState();
 
@@ -158,49 +184,260 @@ namespace MIPS.Sim
             }
             return CurrentLine;
         }
+
+        private Register FindRegister()
+        {
+            RemoveSpaces();
+            int j = 0;
+            while (j < CurrentInstruction.Length && CurrentInstruction[j] != ',' && CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t' && CurrentInstruction[j] != ')' )
+            {
+                j++;
+            }
+            string register = CurrentInstruction.Substring(0, j);
+            CurrentInstruction = CurrentInstruction.Substring(j);
+            return Registers.Find(i => i.Label == register);
+        }
+        private string Extend(string input, int extend)
+        {
+            if (input.Length == extend)
+                return input;
+            string result = "";
+            for (int i = 0; i < extend - input.Length; i++)
+            {
+                result += '0';
+            }
+            result += input;
+            return result;
+        }
+        private string SignExtend(string input, int extend)
+        {
+            if (input.Length == extend)
+                return input;
+
+            string result = "";
+            result += input[0];
+            for(int i = 0; i < extend - input.Length; i++)
+            {
+                result += '0';
+            }
+            result += input.Substring(1);
+            return result;
+        }
+        private string FetchR()
+        {
+            try
+            {
+                RemoveSpaces();
+                string r1 = Extend(Convert.ToString(FindRegister().id,2),3);
+                RemoveSpaces();
+                assertRemoveComma();
+                RemoveSpaces();
+                string r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                RemoveSpaces();
+                assertRemoveComma();
+                RemoveSpaces();
+                string r3 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                RemoveSpaces();
+                if (CurrentInstruction != "")
+                    throw new Exception("Incorrect R Format");
+                return r2+r3+r1;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+        private string FindLabel()
+        {
+            int j = 0;
+            while(j < CurrentInstruction.Length && CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t')
+            {
+                j++;
+            }
+            string labelName = CurrentInstruction.Substring(0, j);
+            CurrentInstruction = CurrentInstruction.Substring(j);
+            return Convert.ToString(LabelTable.Find(i => i.Label == labelName).Address, 2);
+        }
+        private string FindOffset()
+        {
+            int j = 0;
+            while(CurrentInstruction[j] != '(')
+            {
+                if (j > CurrentInstruction.Length)
+                    throw new Exception("Invalid Offset");
+                j++;
+            }
+            int offset = int.Parse(CurrentInstruction.Substring(0,j));
+            CurrentInstruction = CurrentInstruction.Substring(j);
+            if (CurrentInstruction[0] != '(')
+                throw new Exception("Invalid Offset");
+            CurrentInstruction = CurrentInstruction.Substring(1);
+            Register r = FindRegister();
+            if (CurrentInstruction[0] != ')')
+                throw new Exception("Ivalid Offset");
+            CurrentInstruction = CurrentInstruction.Substring(1);
+            return Convert.ToString(r.Value+offset,2);
+            
+        }
+        private string FindImmediate()
+        {
+            int j = 0;
+            while(j < CurrentInstruction.Length && (CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t') )
+            {
+                j++;
+            }
+            string imm = CurrentInstruction.Substring(0, j);
+            CurrentInstruction = CurrentInstruction.Substring(j);
+            if(imm[0] == '-')
+            {
+                return '1'+Convert.ToString(int.Parse(imm.Substring(1)), 2);
+            }else
+                return '0'+Convert.ToString(int.Parse(imm), 2);
+        }
+        private string FetchI(int LOI)
+        {
+            try
+            {
+                RemoveSpaces();
+                string r1 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                RemoveSpaces();
+                assertRemoveComma();
+                RemoveSpaces();
+                string r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                RemoveSpaces();
+                assertRemoveComma();
+                RemoveSpaces();
+                string end = "";
+                switch (LOI)
+                {
+                    case 0: //label
+                         end = Extend(FindLabel(),6);
+                        break;
+                    case 1: //offset
+                        end = Extend(FindOffset(),6);
+                        break;
+                    case 2: //immediate
+                        end = SignExtend(FindImmediate(),6);
+                        break;
+                    default:
+                        break;
+                }
+                RemoveSpaces();
+                if (CurrentInstruction != "")
+                    throw new Exception("Invalid I type instruction");
+                return r2+r1+end;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        private string FetchJ(bool jrFlag)
+        {
+            try
+            {
+                RemoveSpaces();
+                string instruction = "";
+                switch (jrFlag)
+                {
+                    case true:
+                        instruction += Extend(Convert.ToString(FindRegister().Value,2),12);
+                        break;
+                    case false:
+                        instruction += Extend(FindLabel(),12);
+                        break;
+                }
+                RemoveSpaces();
+                if(CurrentInstruction != "")
+                    throw new Exception("Invalid J type Instruction");
+                return instruction;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
         private string ParseInstruction()
         {
-            if(false)
-                throw new Exception("Tried Parsing Label as Instruction");
-            string instruction = "0000000000000000";
-            
-            //parse instruction as binary 16 bits in string
+            string instruction = "";
+            int j;
+            for (j = 0; j < CurrentInstruction.Length; j++)
+            {
+                var temp = CurrentInstruction[j];
+                if (temp == ' ' || temp == '\t')
+                    break;
+            }
+            string op = CurrentInstruction.Substring(0, j);
+
+            CurrentInstruction = CurrentInstruction.Substring(j);
+
+            if (!InstructionSet.ContainsKey(op))
+                throw new Exception("'" + op + "' is not a valid instruction");
+
+            instruction += InstructionSet[op];
+            try
+            {
+                switch (op)
+                {
+                    case "add":
+                        instruction += FetchR() + "000";
+                        break;
+                    case "sub":
+                        instruction += FetchR() + "001";
+                        break;
+                    case "and":
+                        instruction += FetchR() + "010";
+                        break;
+                    case "or":
+                        instruction += FetchR() + "011";
+                        break;
+                    case "slt":
+                        instruction += FetchR() + "100";
+                        break;
+                    case "jr":
+                        instruction += FetchJ(true);
+                        break;
+                    case "mul":
+                        instruction += FetchR() + "101";
+                        break;
+                    case "beq":
+                    case "bne":
+                        instruction += FetchI(0);
+                        break;
+                    case "sll":
+                        instruction += FetchR() + "110";
+                        break;
+                    case "srl":
+                        instruction += FetchR() + "111";
+                        break;
+                    case "muli":
+                    case "lui":
+                    case "slti":
+                        instruction += FetchI(2);
+                        break;
+                    case "lw":
+                    case "sw":
+                        instruction += FetchI(1);
+                        break;
+                    case "j":
+                    case "jal":
+                        instruction += FetchJ(false);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
 
             return instruction;
             //int i = 0, j = 0; //temp vars
 
-            //RemoveSpaces(CurrentInstruction);
-
-            //if (CurrentInstruction.Contains(":"))
-            //    return -2;
-
-            //if (CurrentInstruction.Length < 4)
-            //{
-            //    gui.ReportError("Error: Unknown operation");
-            //    return -2;
-            //}
-
-            //for (j = 0; j < CurrentInstruction.Length; j++)
-            //{
-            //    var temp = CurrentInstruction.ElementAt(j);
-            //    if (temp == ' ' || temp == '\t')
-            //        break;
-            //}
-
-            //string op = CurrentInstruction.Substring(0, j);
-
-            //if (CurrentInstruction.Length > 0 && j < CurrentInstruction.Length - 1)
-            //    CurrentInstruction = CurrentInstruction.Substring(j + 1);
-
-            //int OperationID = -1;
-            //for (i = 0; i < InstructionSet.Length; i++)
-            //{
-            //    if (op == InstructionSet[i])
-            //    {
-            //        OperationID = i;
-            //        break;
-            //    }
-            //}
             //if (OperationID == -1)
             //{
             //    gui.ReportError("Error:Unknown operation");

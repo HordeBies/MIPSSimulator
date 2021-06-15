@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MIPS.Sim;
+using MetroSet_UI.Controls;
 
 namespace MIPS
 {
@@ -41,15 +42,56 @@ namespace MIPS
         {
             if (!(bool)e.Result)
                 return;
-            MessageBox.Show(richTextBox1.Text);
+            richTextBox2.Lines = simulator.iMemoryText.ToArray();
+            RefreshControl(richTextBox2);
+            RefreshControl(DGVim);
+            SelectTab(metroSetTabControl1, 1);
+            SelectTab(MetroSetTabControl2, 0);
+        }
+
+        delegate void SelectTabCallback(MetroSetTabControl control, int index);
+        public void SelectTab(MetroSetTabControl control, int index)
+        {
+            if (!metroSetRadioButton1.Checked)
+                return;
+            if (control.InvokeRequired)
+            {
+                SelectTabCallback d = new SelectTabCallback(SelectTab);
+                this.Invoke(d, new object[] { control, index });
+            }
+            else
+            {
+                control.SelectTab(index);
+            }
+        }
+        delegate void RefreshControlCallback(Control control);
+        public void RefreshControl(Control control)
+        {
+            if (control.InvokeRequired)
+            {
+                RefreshControlCallback d = new RefreshControlCallback(RefreshControl);
+                this.Invoke(d, new object[] { control });
+            }
+            else
+            {
+                control.Refresh();
+            }
+        }
+        public void ClearLog()
+        {
+            metroSetListBox1.Clear();
+            RefreshControl(metroSetListBox1);
+            SelectTab(MetroSetTabControl2, 3);
         }
         public void SendLog(string msg)
         {
             metroSetListBox1.AddItem(msg);
+            RefreshControl(metroSetListBox1);
+            SelectTab(MetroSetTabControl2, 3);
         }
         public void ReportError(string err)
         {
-            metroSetListBox1.AddItem(err);
+            SendLog(err);
         }
         public void updateState()
         {
@@ -166,22 +208,22 @@ namespace MIPS
         }
         private void EvaluateSelection(int index)
         {
-            if (index >= richTextBox1.Lines.Length)
+            if (index >= richTextBox2.Lines.Length)
                 return;
 
-            richTextBox1.SelectAll();
-            richTextBox1.SelectionBackColor = Color.White;
+            richTextBox2.SelectAll();
+            richTextBox2.SelectionBackColor = Color.White;
 
             int indexPos = 0;
 
             for(int i = 0; i< index; i++)
             {
-                indexPos += (richTextBox1.Lines[i].Length + 1);
+                indexPos += (richTextBox2.Lines[i].Length + 1);
 
             }
 
-            richTextBox1.Select(indexPos, richTextBox1.Lines[index].Length);
-            richTextBox1.SelectionBackColor = Color.FromArgb(95, 207, 255);
+            richTextBox2.Select(indexPos, richTextBox2.Lines[index].Length);
+            richTextBox2.SelectionBackColor = Color.FromArgb(95, 207, 255);
         }
         private void Simulator_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {

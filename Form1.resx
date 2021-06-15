@@ -120,62 +120,6 @@
   <metadata name="styleManager1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="richTextBox1.Text" xml:space="preserve">
-    <value>sum:
-	add $v0,$a0,$a1 
-	j sumreturn 
-
-while:
-	beq $a0,$a1, whilereturn
-	addi $a0,$a0,1
-	add $v1,$zero,$a0
-	j while
-	
-ftest1:
-	j ftest1return
-ftest2:
-	j ftest2return
-main:
-	lw $s0,a 
-	lw $s1,b 
-	or  $t0,$s0,$s1
-	and $t1,$t0,$s0
-	add $a0,$zero,$s0
-	add $a1,$zero,$s1
-	j sum 
-	sumreturn: 
-	sw $v0,-2($sp)
-	addi $sp,$sp,-2
-	lw $a1,0($sp) 
-	add $a0,$zero,$s1
-	blt $a0,$a1,while
-	whilereturn:
-	sw $v1,-4($sp)
-	addi $sp,$sp,2
-	lw $s2,-6($sp)
-	sw $s2,result 
-	slt $t2,$s1,$s2
-	sub $t3,$t0,$t2
-	mult $t3,$t1
-	mflo $t4
-	div $t4,$t0
-	mflo $t5
-	mfhi $t6
-	ldc1 $00, ff2
-	ldc1 $02, ff
-	add.d $04,$02,$00
-	sub.d $06,$02,$00
-	mul.d $08,$02,$00
-	div.d $10,$02,$00
-	c.eq.d $02,$00
-	bc1f ftest1
-	ftest1return:
-	c.lt.d $00,$02
-	bc1t ftest2
-	ftest2return:
-	sdc1 $10,-8($sp)
-	ldc1 $12,-8($sp)</value>
-  </data>
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>451, 17</value>
   </metadata>

@@ -342,7 +342,7 @@ namespace MIPS.Sim
                 switch (jrFlag)
                 {
                     case true:
-                        instruction += Extend(Convert.ToString(FindRegister().Value,2),12);
+                        instruction += Extend(Convert.ToString(FindRegister().Value,2),3)+"000000000";
                         break;
                     case false:
                         instruction += Extend(FindLabel(),12);

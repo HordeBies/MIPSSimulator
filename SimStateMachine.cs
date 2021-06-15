@@ -8,10 +8,10 @@ namespace MIPS
 {
     public enum SimStateMachine
     {
-        Ready,
+        Empty,
+        Compiled,
         Running,
         Paused,
-        Stopped,
         Finished,
     }
 }

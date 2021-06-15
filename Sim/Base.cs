@@ -17,6 +17,7 @@ namespace MIPS.Sim
         public List<LabelData> LabelTable;
         public List<String> iMemoryText;
         public string CurrentInstruction;
+        public int LastLine; //For Code Highlighting/Debugging
         public int CurrentLine; // PC
         public MIPSSimulator(Form1 sender)
         {

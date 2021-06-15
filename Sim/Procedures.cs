@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 namespace MIPS.Sim
 {
     public partial class MIPSSimulator {
-        private void Flush()
+        public void Stop()
+        {
+            CurrentLine = 0;
+        }
+        public void Flush()
         {
             LabelTable = new List<LabelData>();
             iMemoryText = new List<string>();
@@ -15,6 +19,9 @@ namespace MIPS.Sim
             Registers.ForEach(i => i.Value = 0);
             Registers[6].Value = 255;
             gui.ClearLog();
+            gui.SelectTab(gui.MetroSetTabControl1, 0);
+            gui.SelectTab(gui.MetroSetTabControl2, 0);
+            gui.RefreshControls();
             CurrentLine = 0;
         }
         public void RemoveSpaces()
@@ -152,7 +159,6 @@ namespace MIPS.Sim
                     iMemoryText[i.Address] = i.Label+": " + iMemoryText[i.Address];
             });
             gui.SendLog("Initialized and ready to execute.");
-            gui.updateState();
 
             return true;
         }
@@ -599,14 +605,22 @@ namespace MIPS.Sim
             CurrentInstruction = CurrentInstruction.Substring(j);
             if(imm[0] == '-')
             {
-                return '1'+Convert.ToString(int.Parse(imm.Substring(1)), 2);
-            }else
-                return '0'+Convert.ToString(int.Parse(imm), 2);
+                int number = int.Parse(imm.Substring(1));
+                number = number > 31 ? 31 : number;
+                return '1'+Convert.ToString(number, 2);
+            }
+            else
+            {
+                int number = int.Parse(imm);
+                number = number > 31 ? 31 : number;
+                return '0'+Convert.ToString(number, 2);
+            }
         }
         public int Execute()
         {
             if (CurrentLine < iMemory.Count && iMemory[CurrentLine].Value != 0)
             {
+                LastLine = CurrentLine;
                 CurrentLine++;
                 try
                 {
@@ -617,23 +631,25 @@ namespace MIPS.Sim
                     gui.SendLog("on Line: " + CurrentLine.ToString());
                 }
             }
-            if (CurrentLine >= iMemory.Count)
+            if (iMemory[CurrentLine].Value == 0)
             {
                 gui.SendLog("Execution Completed");
             }
-            return CurrentLine;
+            return LastLine;
         }
         public bool ExecuteInstruction(string instruction)
         {
             string opCode = instruction.Substring(0, 4);
             string opString = InstructionSet.First(i => i.Value == opCode).Key;
-            switch (opString)
+            /*switch (opString)
             {
                 case "add":
                     break;
                 default:
                     break;
-            }
+            }*/
+            return true;
+
             //switch (instruction)
             //{
             //    case 0:

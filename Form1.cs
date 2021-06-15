@@ -17,7 +17,19 @@ namespace MIPS
     {
         public bool mode;
         public MIPSSimulator simulator;
-        public SimStateMachine state = SimStateMachine.Ready;
+        private SimStateMachine state = SimStateMachine.Empty;
+        public SimStateMachine State
+        {
+            set
+            {
+                state = value;
+                UpdateButtons();
+            }
+            get
+            {
+                return state;
+            }
+        }
         public Form1()
         {
             InitializeComponent();
@@ -41,11 +53,15 @@ namespace MIPS
         private void Compiler_Finished(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!(bool)e.Result)
+            {
+                State = SimStateMachine.Empty;
                 return;
+            }
+            State = SimStateMachine.Compiled;
             richTextBox2.Lines = simulator.iMemoryText.ToArray();
             RefreshControl(richTextBox2);
             RefreshControl(DGVim);
-            SelectTab(metroSetTabControl1, 1);
+            SelectTab(MetroSetTabControl1, 1);
             SelectTab(MetroSetTabControl2, 0);
         }
 
@@ -77,11 +93,24 @@ namespace MIPS
                 control.Refresh();
             }
         }
+        delegate void RefreshTabControlsCallback();
+        public void RefreshControls()
+        {
+            if(MetroSetTabControl1.InvokeRequired || MetroSetTabControl2.InvokeRequired)
+            {
+                RefreshTabControlsCallback d = new RefreshTabControlsCallback(RefreshControls);
+                this.Invoke(d);
+            }
+            else
+            {
+                MetroSetTabControl1.SelectedTab.Controls[0].Refresh();
+                MetroSetTabControl2.SelectedTab.Controls[0].Refresh();
+            }
+        }
         public void ClearLog()
         {
             metroSetListBox1.Clear();
             RefreshControl(metroSetListBox1);
-            SelectTab(MetroSetTabControl2, 3);
         }
         public void SendLog(string msg)
         {
@@ -92,10 +121,6 @@ namespace MIPS
         public void ReportError(string err)
         {
             SendLog(err);
-        }
-        public void updateState()
-        {
-            //metroSetTabControl2.SelectedTab.Controls[0].Refresh();
         }
         private void InitDGVbindings()
         {
@@ -122,7 +147,16 @@ namespace MIPS
         {
             switch (state)
             {
-                case SimStateMachine.Ready:
+                case SimStateMachine.Empty:
+                    Enable(CompileButton);
+                    Disable(RunButton);
+                    Disable(RunOneButton);
+                    Disable(PauseButton);
+                    Disable(StopButton);
+                    Disable(ResetButton);
+                    break;
+                case SimStateMachine.Compiled:
+                    Enable(CompileButton);
                     Enable(RunButton);
                     Enable(RunOneButton);
                     Disable(PauseButton);
@@ -130,6 +164,7 @@ namespace MIPS
                     Enable(ResetButton);
                     break;
                 case SimStateMachine.Running:
+                    Disable(CompileButton);
                     Disable(RunButton);
                     Disable(RunOneButton);
                     Enable(PauseButton);
@@ -137,24 +172,19 @@ namespace MIPS
                     Disable(ResetButton);
                     break;
                 case SimStateMachine.Paused:
+                    Disable(CompileButton);
                     Enable(RunButton);
                     Enable(RunOneButton);
                     Disable(PauseButton);
                     Enable(StopButton);
-                    Enable(ResetButton);
+                    Disable(ResetButton);
                     break;
-                case SimStateMachine.Stopped:
+                case SimStateMachine.Finished:
+                    Enable(CompileButton);
                     Enable(RunButton);
                     Enable(RunOneButton);
                     Disable(PauseButton);
                     Disable(StopButton);
-                    Enable(ResetButton);
-                    break;
-                case SimStateMachine.Finished:
-                    Disable(RunButton);
-                    Disable(RunOneButton);
-                    Disable(PauseButton);
-                    Enable(StopButton);
                     Enable(ResetButton);
                     break;
                 default:
@@ -163,19 +193,32 @@ namespace MIPS
         }
         private void Run(object sender, EventArgs e)
         {
-
+            RunFlag = true;
+            State = SimStateMachine.Running;
+            backgroundWorker1.RunWorkerAsync(RunFlag);
+            
         }
         private void RunOneStep(object sender, EventArgs e)
         {
-
+            RunFlag = false;
+            State = SimStateMachine.Running;
+            backgroundWorker1.RunWorkerAsync(RunFlag);
         }
         private void Pause(object sender, EventArgs e)
         {
-
+            backgroundWorker1.CancelAsync();
+            State = SimStateMachine.Paused;
         }
         private void Stop(object sender, EventArgs e)
         {
-
+            backgroundWorker1.CancelAsync();
+            simulator.Stop();
+            State = SimStateMachine.Finished;
+        }
+        private void Reset(object sender, EventArgs e)
+        {
+            simulator.Flush();
+            State = SimStateMachine.Empty;
         }
 
         private void Simulator_DoWork(object sender, DoWorkEventArgs e)
@@ -195,16 +238,16 @@ namespace MIPS
 
                     //Thread.Sleep(new TimeSpan(0, 0, 2)); //test
                     LineIndex = simulator.Execute();
-
+                    backgroundWorker1.ReportProgress(LineIndex);
                 }
             }
             else
             {
                 //Thread.Sleep(new TimeSpan(0, 0, 2)); //test
                 LineIndex = simulator.Execute();
-                
+                backgroundWorker1.ReportProgress(LineIndex);
             }
-
+            e.Result = (simulator.iMemory[simulator.CurrentLine].Value == 0); 
         }
         private void EvaluateSelection(int index)
         {
@@ -219,57 +262,36 @@ namespace MIPS
             for(int i = 0; i< index; i++)
             {
                 indexPos += (richTextBox2.Lines[i].Length + 1);
-
             }
 
             richTextBox2.Select(indexPos, richTextBox2.Lines[index].Length);
             richTextBox2.SelectionBackColor = Color.FromArgb(95, 207, 255);
+
         }
         private void Simulator_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            index = e.ProgressPercentage;
-
-            //var test = new BindingSource();
-            //dataGridView6.DataSource = test;
-            //dataGridView6.Update();
+            index = simulator.LastLine;
             EvaluateSelection(index);
-            index++;
-            MetroSetTabControl2.SelectedTab.Controls[0].Refresh();
-            AutoSwitch();
-            UpdateButtons();
         }
 
-        private void AutoSwitch()
-        {
-        }
 
         private void Simulator_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             RunFlag = false;
-            state = SimStateMachine.Paused;
             if (e.Cancelled)
             {
                 SendLog("Cancelled");
                 return;
             }
-            var res = (e.Result as Tuple<int, bool>);
-
-            index = res.Item1;
-            if (res.Item2)
+            if((bool)e.Result)
             {
-                state = SimStateMachine.Finished;
+                State = SimStateMachine.Finished;
+                simulator.CurrentLine = 0;
             }
-            if (false)
+            else if(State == SimStateMachine.Running)
             {
-                Stop(null, null);
-                return;
+                State = SimStateMachine.Paused;
             }
-            UpdateButtons();
-
-        }
-
-        private void InputChanged(object sender, EventArgs e)
-        {
 
         }
 
@@ -296,11 +318,6 @@ namespace MIPS
             }
         }
 
-        private void Reset(object sender, EventArgs e)
-        {
-            //simulator.Reset(richTextBox1.Lines, richTextBox2.Lines);
-            MetroSetTabControl2.SelectedTab.Controls[0].Refresh();
-        }
 
     }
 }

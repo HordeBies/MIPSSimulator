@@ -13,6 +13,49 @@ namespace MIPS.Sim
 			gui.ReportError("Error: invalid usage of instruction");
 			return;
 		}
+		private bool FindRegister(string id)
+		{
+			return true;
+			//bool foundRegister = false;
+			//if (CurrentInstruction.ElementAt(0) != '$' || CurrentInstruction.Length < 2)
+			//{
+			//    gui.ReportError("Error: Register expected");
+			//    return foundRegister;
+			//}
+			//CurrentInstruction = CurrentInstruction.Substring(1);
+			//string register = CurrentInstruction.Substring(0, 2);
+			//if (register == "ze" && CurrentInstruction.Length >= 4)
+			//{
+			//    register += CurrentInstruction.Substring(2, 2);
+			//}
+			//else if (register == "ze")
+			//{
+			//    gui.ReportError("Error: Register expected");
+			//    return foundRegister;
+			//}
+			//register = "$" + register;
+			//for (int i = 0; i < Registers.Count; i++)
+			//{
+			//    if (register == Registers[i].Label)
+			//    {
+			//        args[num] = i;
+			//        foundRegister = true;
+			//        if (i != 0)
+			//        {
+			//            CurrentInstruction = CurrentInstruction.Substring(2);
+			//        }
+			//        else
+			//        {
+			//            CurrentInstruction = CurrentInstruction.Substring(4);
+			//        }
+			//    }
+			//}
+			//if (!foundRegister)
+			//{
+			//    gui.ReportError("Error: Invalid register");
+			//}
+			//return foundRegister;
+		}
 		//void add()
 		//{
 		//	if (args[0] == 29)
@@ -21,32 +64,32 @@ namespace MIPS.Sim
 		//			return;
 		//	} 
 		//	if(args[0] != 0 && args[0] != 1 &&  args[1] != 1 && args[2] != 1)
-  //          {
+		//          {
 		//		Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) + int.Parse(Registers[args[2]].Value)).ToString();
-  //          }
-  //          else
-  //          {
+		//          }
+		//          else
+		//          {
 		//		OpError();
-  //          }
+		//          }
 		//}
 		//void addi()
 		//{
 		//	bool spFlag = false;
 		//	if(args[0] == 29)
-  //          {
+		//          {
 		//		spFlag = true;
 		//		if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2]*4))
 		//			return;
-  //          }
+		//          }
 		//	if(args[0] != 0 && args[0] != 1 && args[1] != 1)
-  //          {
+		//          {
 		//		Registers[args[0]].Value = (int.Parse(Registers[args[1]].Value) + (spFlag?args[2]*4:args[2])).ToString();
-  //          }
-  //          else
-  //          {
+		//          }
+		//          else
+		//          {
 		//		OpError();
 		//		return;
-  //          }
+		//          }
 		//}
 		//void sub()
 		//{
@@ -134,14 +177,14 @@ namespace MIPS.Sim
 		//void slt()
 		//{
 		//	if(args[0] != 0 && args[0] != 1 && args[1] != 1 && args[2] != 1)
-  //          {
+		//          {
 		//		Registers[args[0]].Value =(int.Parse(Registers[args[1]].Value) < int.Parse(Registers[args[2]].Value)) ? "1":"0";
-  //          }
-  //          else
-  //          {
+		//          }
+		//          else
+		//          {
 		//		OpError();
 		//		return;
-  //          }
+		//          }
 		//}
 		//void slti()
 		//{
@@ -158,14 +201,14 @@ namespace MIPS.Sim
 		//void lw()
 		//{
 		//	if(args[0] == 29)
-  //          {
+		//          {
 		//		if (!checkStackBounds(int.Parse(Registers[args[1]].Value + args[2]*4)))
 		//			return;
-  //          }
+		//          }
 		//	if(args[0] != 0 && args[0] != 1 && args[2] == -1)
-  //          {
+		//          {
 		//		Registers[args[0]].Value = MemoryTable[args[1]].Value;
-  //          }
+		//          }
 		//	else if(args[0] != 0 && args[0] != 1) 
 		//	{
 		//		int offsetPos = ((int.Parse(Registers[args[1]].Value) - 40000) / 4 + args[2] + 1);
@@ -176,37 +219,37 @@ namespace MIPS.Sim
 		//		}
 		//		Registers[args[0]].Value = Stack[offsetPos].Value;
 		//	}
-  //          else
-  //          {
+		//          else
+		//          {
 		//		OpError();
 		//		return;
-  //          }
+		//          }
 		//}
-  //      void sw()
+		//      void sw()
 		//{
 		//	if(args[0] != 1 && args[2] == -1)
-  //          {
+		//          {
 		//		MemoryTable[args[1]].Value = Registers[args[0]].Value.ToString();
-  //          }else if(args[0] != 1)
-  //          {
+		//          }else if(args[0] != 1)
+		//          {
 		//		if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2] * 4))
-  //              {
+		//              {
 		//			OpError();
 		//			return;
-  //              }
+		//              }
 		//		int offsetPos = ((int.Parse(Registers[args[1]].Value) -40000)/4 + args[2] +1);
 		//		if (offsetPos > 99 || offsetPos < 0)
-  //              {
+		//              {
 		//			OpError();
 		//			return;
-  //              }
+		//              }
 		//		Stack[offsetPos].Value = Registers[args[0]].Value;
-  //          }
-  //          else
-  //          {
+		//          }
+		//          else
+		//          {
 		//		OpError();
 		//		return;
-  //          }
+		//          }
 		//}
 		//void beq()
 		//{
@@ -219,16 +262,16 @@ namespace MIPS.Sim
 		//		}
 		//		else
 		//			CurrentLine++;
-  //          }
-  //          else
-  //          {
+		//          }
+		//          else
+		//          {
 		//		OpError();
-  //          }
+		//          }
 		//}
 		//void blt()
 		//{
 		//	if(args[0] != 1 && args[1] != 1)
-  //          {
+		//          {
 		//		LastLine = CurrentLine;
 		//		if ((int.Parse((Registers[args[0]].Value))) < (int.Parse(Registers[args[1]].Value)))
 		//		{
@@ -236,7 +279,7 @@ namespace MIPS.Sim
 		//		}
 		//		else
 		//			CurrentLine++;
-  //          }
+		//          }
 		//	else
 		//	{
 		//		OpError();
@@ -250,17 +293,17 @@ namespace MIPS.Sim
 		//void ldc1()
 		//{
 		//	if(args[0] > 31 && args[2] == -1)
-  //          {
-  //              if (!MemoryTable[args[1]].floatFlag)
-  //              {
+		//          {
+		//              if (!MemoryTable[args[1]].floatFlag)
+		//              {
 		//			OpError();
 		//			return;
-  //              }
+		//              }
 		//		Registers[args[0]].Value = MemoryTable[args[1]].Value;
 		//		Registers[args[0]+1].Value = MemoryTable[args[1]].Value;
 		//	}
 		//	else if (args[0] > 31)
-  //          {
+		//          {
 		//		if (!checkStackBounds(int.Parse(Registers[args[1]].Value) + args[2]*4))
 		//		{
 		//			OpError();
@@ -273,15 +316,15 @@ namespace MIPS.Sim
 		//			return;
 		//		}
 		//		if(Stack[offsetPos].Value == Stack[offsetPos - 1].Value)
-  //              {
+		//              {
 		//			Registers[args[0]].Value = Stack[offsetPos].Value;
 		//			Registers[args[0]+1].Value = Stack[offsetPos].Value;
 		//		}
 		//		else
-  //              {
-  //                  OpError();
-  //              }
-				
+		//              {
+		//                  OpError();
+		//              }
+
 		//	}
 		//	else
 		//	{
@@ -292,7 +335,7 @@ namespace MIPS.Sim
 		//void sdc1()
 		//{
 		//	if (args[0] > 31 && args[2] == -1)
-  //          {
+		//          {
 		//		if (!MemoryTable[args[1]].floatFlag)
 		//		{
 		//			OpError();
@@ -319,21 +362,21 @@ namespace MIPS.Sim
 		//}
 		//void addd()
 		//{
-  //          if (args[0] > 31 && args[1] > 31 && args[2] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0 && args[2] % 2 == 0)
-  //          {
+		//          if (args[0] > 31 && args[1] > 31 && args[2] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0 && args[2] % 2 == 0)
+		//          {
 		//		string res = (double.Parse(Registers[args[1]].Value) + double.Parse(Registers[args[2]].Value)).ToString();
 		//		Registers[args[0]].Value = res;
 		//		Registers[args[0]+1].Value = res;
 		//	}
 		//	else
-  //          {
+		//          {
 		//		OpError();
 		//		return;
 		//	}
 		//}
 		//void subd()
 		//{
-			
+
 		//	if (args[0] > 31 && args[1] > 31 && args[2] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0 && args[2] % 2 == 0)
 		//	{
 		//		string res = (double.Parse(Registers[args[1]].Value) - double.Parse(Registers[args[2]].Value)).ToString();
@@ -345,7 +388,7 @@ namespace MIPS.Sim
 		//		OpError();
 		//		return;
 		//	}
-			
+
 		//}
 		//void divd()
 		//{
@@ -379,14 +422,14 @@ namespace MIPS.Sim
 		//{
 		//	if (args[0] > 31 && args[1] > 31 && args[0] % 2 == 0 && args[1] % 2 == 0)
 		//	{
-  //              FPA = double.Parse(Registers[args[0]].Value).Equals(double.Parse(Registers[args[1]].Value));
-  //          }
+		//              FPA = double.Parse(Registers[args[0]].Value).Equals(double.Parse(Registers[args[1]].Value));
+		//          }
 		//	else
 		//	{
 		//		OpError();
 		//		return;
 		//	}
-			
+
 		//}
 		//void cltd()
 		//{
@@ -404,13 +447,13 @@ namespace MIPS.Sim
 		//{
 		//	LastLine = CurrentLine;
 		//	if(FPA == true)
-  //          {
+		//          {
 		//		CurrentLine = args[0];
-  //          }
-  //          else
-  //          {
+		//          }
+		//          else
+		//          {
 		//		CurrentLine++;
-  //          }
+		//          }
 		//}
 		//void bc1f()
 		//{
@@ -418,19 +461,19 @@ namespace MIPS.Sim
 		//	if (FPA == false)
 		//	{
 		//		CurrentLine = args[0];
-  //          }
-  //          else
-  //          {
+		//          }
+		//          else
+		//          {
 		//		CurrentLine++;
-  //          }
+		//          }
 		//}
 		//void mfhi()
-  //      {
+		//      {
 		//	if(args[0] < 31 && args[0] > 1)
-  //          {
+		//          {
 		//		Registers[args[0]].Value = MFHI.ToString();
-  //          }
-  //      }
+		//          }
+		//      }
 		//void mflo()
 		//{
 		//	if (args[0] < 31 && args[0] > 1)
@@ -443,7 +486,7 @@ namespace MIPS.Sim
 		//	if (args[0] != 0 && args[0] != 1 && args[1] != 1)
 		//	{
 		//		long a = int.Parse(Registers[args[0]].Value);
-  //              long b = int.Parse(Registers[args[1]].Value);
+		//              long b = int.Parse(Registers[args[1]].Value);
 		//		long c = a * b;
 		//		long hi = (c >> 32);
 		//		MFLO = (int)(c);

@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 namespace MIPS.Sim
 {
     public partial class MIPSSimulator {
-        public void ReadInstruction(int line)
+        private void Flush()
         {
-            CurrentInstruction = InputText[line];
-            if (CurrentInstruction.Contains("#"))
-            {
-                CurrentInstruction = CurrentInstruction.Substring(0, CurrentInstruction.IndexOf("#"));
-            }
+            LabelTable = new List<LabelData>();
+            iMemoryText = new List<string>();
+            iMemory.ForEach(i => i.Value = 0);
+            Registers.ForEach(i => i.Value = 0);
+            Registers[6].Value = 255;
+            gui.ClearLog();
+            CurrentLine = 0;
         }
         public void RemoveSpaces()
         {
@@ -24,33 +26,23 @@ namespace MIPS.Sim
             }
             CurrentInstruction = CurrentInstruction.Substring(i);
         }
-        private bool assertLabelAllowed(string str)
+        private bool assertRemoveComma()
         {
-            if (str.Length == 0 || char.IsDigit(str.ElementAt(0)))
+            if (CurrentInstruction.Length < 2 || CurrentInstruction.ElementAt(0) != ',')
             {
-                gui.ReportError("Error: Invalid Label");
+                gui.ReportError("Error: Comma expected");
                 return false;
             }
-            for (int i = 0; i < str.Length; i++)
-            {
-                char temp = str.ElementAt(i);
-                if (!(char.IsDigit(temp) || char.IsLetter(temp)))
-                {
-                    gui.ReportError("Error: Invalid Label");
-                    return false;
-                }
-            }
+            CurrentInstruction = CurrentInstruction.Substring(1);
             return true;
         }
-        private void Flush()
+        public void ReadInstruction(int line)
         {
-            LabelTable = new List<LabelData>();
-            iMemoryText = new List<string>();
-            iMemory.ForEach(i => i.Value = 0);
-            Registers.ForEach(i => i.Value = 0);
-            Registers[6].Value = 255;
-            gui.ClearLog();
-            CurrentLine = 0;
+            CurrentInstruction = InputText[line];
+            if (CurrentInstruction.Contains("#"))
+            {
+                CurrentInstruction = CurrentInstruction.Substring(0, CurrentInstruction.IndexOf("#"));
+            }
         }
         public bool Compile(string[] input)
         {
@@ -163,201 +155,6 @@ namespace MIPS.Sim
             gui.updateState();
 
             return true;
-        }
-        public int Execute()
-        {
-            if (CurrentLine < iMemory.Count && iMemory[CurrentLine].Value != 0)
-            {
-                CurrentLine++;
-                try
-                {
-                    ExecuteInstruction(iMemory[CurrentLine].Value);
-                }
-                catch (Exception e)
-                {
-                    gui.SendLog("on Line: " + CurrentLine.ToString());
-                }
-            }
-            if (CurrentLine >= iMemory.Count)
-            {
-                gui.SendLog("Execution Completed");
-            }
-            return CurrentLine;
-        }
-
-        private Register FindRegister()
-        {
-            RemoveSpaces();
-            int j = 0;
-            while (j < CurrentInstruction.Length && CurrentInstruction[j] != ',' && CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t' && CurrentInstruction[j] != ')' )
-            {
-                j++;
-            }
-            string register = CurrentInstruction.Substring(0, j);
-            CurrentInstruction = CurrentInstruction.Substring(j);
-            return Registers.Find(i => i.Label == register);
-        }
-        private string Extend(string input, int extend)
-        {
-            if (input.Length == extend)
-                return input;
-            string result = "";
-            for (int i = 0; i < extend - input.Length; i++)
-            {
-                result += '0';
-            }
-            result += input;
-            return result;
-        }
-        private string SignExtend(string input, int extend)
-        {
-            if (input.Length == extend)
-                return input;
-
-            string result = "";
-            result += input[0];
-            for(int i = 0; i < extend - input.Length; i++)
-            {
-                result += '0';
-            }
-            result += input.Substring(1);
-            return result;
-        }
-        private string FetchR()
-        {
-            try
-            {
-                RemoveSpaces();
-                string r1 = Extend(Convert.ToString(FindRegister().id,2),3);
-                RemoveSpaces();
-                assertRemoveComma();
-                RemoveSpaces();
-                string r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
-                RemoveSpaces();
-                assertRemoveComma();
-                RemoveSpaces();
-                string r3 = Extend(Convert.ToString(FindRegister().id, 2), 3);
-                RemoveSpaces();
-                if (CurrentInstruction != "")
-                    throw new Exception("Incorrect R Format");
-                return r2+r3+r1;
-            }
-            catch (Exception e)
-            {
-
-                throw e;
-            }
-        }
-        private string FindLabel()
-        {
-            int j = 0;
-            while(j < CurrentInstruction.Length && CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t')
-            {
-                j++;
-            }
-            string labelName = CurrentInstruction.Substring(0, j);
-            CurrentInstruction = CurrentInstruction.Substring(j);
-            return Convert.ToString(LabelTable.Find(i => i.Label == labelName).Address, 2);
-        }
-        private string FindOffset()
-        {
-            int j = 0;
-            while(CurrentInstruction[j] != '(')
-            {
-                if (j > CurrentInstruction.Length)
-                    throw new Exception("Invalid Offset");
-                j++;
-            }
-            int offset = int.Parse(CurrentInstruction.Substring(0,j));
-            CurrentInstruction = CurrentInstruction.Substring(j);
-            if (CurrentInstruction[0] != '(')
-                throw new Exception("Invalid Offset");
-            CurrentInstruction = CurrentInstruction.Substring(1);
-            Register r = FindRegister();
-            if (CurrentInstruction[0] != ')')
-                throw new Exception("Ivalid Offset");
-            CurrentInstruction = CurrentInstruction.Substring(1);
-            return Convert.ToString(r.Value+offset,2);
-            
-        }
-        private string FindImmediate()
-        {
-            int j = 0;
-            while(j < CurrentInstruction.Length && (CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t') )
-            {
-                j++;
-            }
-            string imm = CurrentInstruction.Substring(0, j);
-            CurrentInstruction = CurrentInstruction.Substring(j);
-            if(imm[0] == '-')
-            {
-                return '1'+Convert.ToString(int.Parse(imm.Substring(1)), 2);
-            }else
-                return '0'+Convert.ToString(int.Parse(imm), 2);
-        }
-        private string FetchI(int LOI)
-        {
-            try
-            {
-                RemoveSpaces();
-                string r1 = Extend(Convert.ToString(FindRegister().id, 2), 3);
-                RemoveSpaces();
-                assertRemoveComma();
-                RemoveSpaces();
-                string r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
-                RemoveSpaces();
-                assertRemoveComma();
-                RemoveSpaces();
-                string end = "";
-                switch (LOI)
-                {
-                    case 0: //label
-                         end = Extend(FindLabel(),6);
-                        break;
-                    case 1: //offset
-                        end = Extend(FindOffset(),6);
-                        break;
-                    case 2: //immediate
-                        end = SignExtend(FindImmediate(),6);
-                        break;
-                    default:
-                        break;
-                }
-                RemoveSpaces();
-                if (CurrentInstruction != "")
-                    throw new Exception("Invalid I type instruction");
-                return r2+r1+end;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        private string FetchJ(bool jrFlag)
-        {
-            try
-            {
-                RemoveSpaces();
-                string instruction = "";
-                switch (jrFlag)
-                {
-                    case true:
-                        instruction += Extend(Convert.ToString(FindRegister().Value,2),3)+"000000000";
-                        break;
-                    case false:
-                        instruction += Extend(FindLabel(),12);
-                        break;
-                }
-                RemoveSpaces();
-                if(CurrentInstruction != "")
-                    throw new Exception("Invalid J type Instruction");
-                return instruction;
-            }
-            catch (Exception e)
-            {
-
-                throw e;
-            }
         }
         private string ParseInstruction()
         {
@@ -614,61 +411,229 @@ namespace MIPS.Sim
             //        return -2;
             //}
         }
-        private bool assertRemoveComma()
+        private bool assertLabelAllowed(string str)
         {
-            if (CurrentInstruction.Length < 2 || CurrentInstruction.ElementAt(0) != ',')
+            if (str.Length == 0 || char.IsDigit(str.ElementAt(0)))
             {
-                gui.ReportError("Error: Comma expected");
+                gui.ReportError("Error: Invalid Label");
                 return false;
             }
+            for (int i = 0; i < str.Length; i++)
+            {
+                char temp = str.ElementAt(i);
+                if (!(char.IsDigit(temp) || char.IsLetter(temp)))
+                {
+                    gui.ReportError("Error: Invalid Label");
+                    return false;
+                }
+            }
+            return true;
+        }
+        private Register FindRegister()
+        {
+            RemoveSpaces();
+            int j = 0;
+            while (j < CurrentInstruction.Length && CurrentInstruction[j] != ',' && CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t' && CurrentInstruction[j] != ')' )
+            {
+                j++;
+            }
+            string register = CurrentInstruction.Substring(0, j);
+            CurrentInstruction = CurrentInstruction.Substring(j);
+            return Registers.Find(i => i.Label == register);
+        }
+        private string Extend(string input, int extend)
+        {
+            if (input.Length == extend)
+                return input;
+            string result = "";
+            for (int i = 0; i < extend - input.Length; i++)
+            {
+                result += '0';
+            }
+            result += input;
+            return result;
+        }
+        private string SignExtend(string input, int extend)
+        {
+            if (input.Length == extend)
+                return input;
+
+            string result = "";
+            result += input[0];
+            for(int i = 0; i < extend - input.Length; i++)
+            {
+                result += '0';
+            }
+            result += input.Substring(1);
+            return result;
+        }
+        private string FetchR()
+        {
+            try
+            {
+                RemoveSpaces();
+                string r1 = Extend(Convert.ToString(FindRegister().id,2),3);
+                RemoveSpaces();
+                assertRemoveComma();
+                RemoveSpaces();
+                string r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                RemoveSpaces();
+                assertRemoveComma();
+                RemoveSpaces();
+                string r3 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                RemoveSpaces();
+                if (CurrentInstruction != "")
+                    throw new Exception("Incorrect R Format");
+                return r2+r3+r1;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+        private string FetchI(int LOI)
+        {
+            try
+            {
+                RemoveSpaces();
+                string r1 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                RemoveSpaces();
+                assertRemoveComma();
+                RemoveSpaces();
+                string r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                RemoveSpaces();
+                assertRemoveComma();
+                RemoveSpaces();
+                string end = "";
+                switch (LOI)
+                {
+                    case 0: //label
+                         end = Extend(FindLabel(),6);
+                        break;
+                    case 1: //offset
+                        end = Extend(FindOffset(),6);
+                        break;
+                    case 2: //immediate
+                        end = SignExtend(FindImmediate(),6);
+                        break;
+                    default:
+                        break;
+                }
+                RemoveSpaces();
+                if (CurrentInstruction != "")
+                    throw new Exception("Invalid I type instruction");
+                return r2+r1+end;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        private string FetchJ(bool jrFlag)
+        {
+            try
+            {
+                RemoveSpaces();
+                string instruction = "";
+                switch (jrFlag)
+                {
+                    case true:
+                        instruction += Extend(Convert.ToString(FindRegister().Value,2),3)+"000000000";
+                        break;
+                    case false:
+                        instruction += Extend(FindLabel(),12);
+                        break;
+                }
+                RemoveSpaces();
+                if(CurrentInstruction != "")
+                    throw new Exception("Invalid J type Instruction");
+                return instruction;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+        private string FindLabel()
+        {
+            int j = 0;
+            while(j < CurrentInstruction.Length && CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t')
+            {
+                j++;
+            }
+            string labelName = CurrentInstruction.Substring(0, j);
+            CurrentInstruction = CurrentInstruction.Substring(j);
+            return Convert.ToString(LabelTable.Find(i => i.Label == labelName).Address, 2);
+        }
+        private string FindOffset()
+        {
+            int j = 0;
+            while(CurrentInstruction[j] != '(')
+            {
+                if (j > CurrentInstruction.Length)
+                    throw new Exception("Invalid Offset");
+                j++;
+            }
+            int offset = int.Parse(CurrentInstruction.Substring(0,j));
+            CurrentInstruction = CurrentInstruction.Substring(j);
+            if (CurrentInstruction[0] != '(')
+                throw new Exception("Invalid Offset");
             CurrentInstruction = CurrentInstruction.Substring(1);
-            return true;
+            Register r = FindRegister();
+            if (CurrentInstruction[0] != ')')
+                throw new Exception("Ivalid Offset");
+            CurrentInstruction = CurrentInstruction.Substring(1);
+            return Convert.ToString(r.Value+offset,2);
+            
         }
-        private bool FindRegister(int num)
+        private string FindImmediate()
         {
-            return true;
-            //bool foundRegister = false;
-            //if (CurrentInstruction.ElementAt(0) != '$' || CurrentInstruction.Length < 2)
-            //{
-            //    gui.ReportError("Error: Register expected");
-            //    return foundRegister;
-            //}
-            //CurrentInstruction = CurrentInstruction.Substring(1);
-            //string register = CurrentInstruction.Substring(0, 2);
-            //if (register == "ze" && CurrentInstruction.Length >= 4)
-            //{
-            //    register += CurrentInstruction.Substring(2, 2);
-            //}
-            //else if (register == "ze")
-            //{
-            //    gui.ReportError("Error: Register expected");
-            //    return foundRegister;
-            //}
-            //register = "$" + register;
-            //for (int i = 0; i < Registers.Count; i++)
-            //{
-            //    if (register == Registers[i].Label)
-            //    {
-            //        args[num] = i;
-            //        foundRegister = true;
-            //        if (i != 0)
-            //        {
-            //            CurrentInstruction = CurrentInstruction.Substring(2);
-            //        }
-            //        else
-            //        {
-            //            CurrentInstruction = CurrentInstruction.Substring(4);
-            //        }
-            //    }
-            //}
-            //if (!foundRegister)
-            //{
-            //    gui.ReportError("Error: Invalid register");
-            //}
-            //return foundRegister;
+            int j = 0;
+            while(j < CurrentInstruction.Length && (CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t') )
+            {
+                j++;
+            }
+            string imm = CurrentInstruction.Substring(0, j);
+            CurrentInstruction = CurrentInstruction.Substring(j);
+            if(imm[0] == '-')
+            {
+                return '1'+Convert.ToString(int.Parse(imm.Substring(1)), 2);
+            }else
+                return '0'+Convert.ToString(int.Parse(imm), 2);
         }
-        public bool ExecuteInstruction(int instruction)
+        public int Execute()
         {
+            if (CurrentLine < iMemory.Count && iMemory[CurrentLine].Value != 0)
+            {
+                CurrentLine++;
+                try
+                {
+                    ExecuteInstruction(iMemory[CurrentLine].Binary);
+                }
+                catch (Exception e)
+                {
+                    gui.SendLog("on Line: " + CurrentLine.ToString());
+                }
+            }
+            if (CurrentLine >= iMemory.Count)
+            {
+                gui.SendLog("Execution Completed");
+            }
+            return CurrentLine;
+        }
+        public bool ExecuteInstruction(string instruction)
+        {
+            string opCode = instruction.Substring(0, 4);
+            string opString = InstructionSet.First(i => i.Value == opCode).Key;
+            switch (opString)
+            {
+                case "add":
+                    break;
+                default:
+                    break;
+            }
             //switch (instruction)
             //{
             //    case 0:
@@ -758,18 +723,6 @@ namespace MIPS.Sim
             //    default:
             //        return false;
             //}
-            return true;
-        }
-        private bool OnlySpaces(int lower, int upper, string str)
-        {
-            for (int i = lower; i < upper; i++)
-            {
-                if (str.ElementAt(i) != ' ' && str[i] != '\t')
-                {
-                    gui.ReportError("Error: Unexpected character");
-                    return false;
-                }
-            }
             return true;
         }
     }

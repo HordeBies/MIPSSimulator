@@ -36,7 +36,7 @@ namespace MIPS.Sim
             string[] tempInstructionKeySet = new string[]  { "add", "sub", "and", "or", "slt", "mul", "sll","srl"
                                                             ,"slti","beq","bne", "muli", "lui", "lw","sw"
                                                             , "jr","j","jal"};
-            string[] tempInstructionValueSet = new string[]{ "0000", "0000", "0000", "0000", "0000", "0000", "0000","0000"
+            string[] tempInstructionValueSet = new string[]{ "0000", "0000", "0000", "0000", "0000", "0000", "1011","1100"
                                                             ,"0010","0011","0100", "0101", "0110", "0111","1000"
                                                             , "0001","1001","1010"};
             InstructionSet = new Dictionary<string, string>(tempInstructionKeySet.Length);

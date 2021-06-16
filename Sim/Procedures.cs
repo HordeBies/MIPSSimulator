@@ -100,16 +100,39 @@ namespace MIPS.Sim
                     LabelTable.Add(tempLabel);
                 }
             }
-            //Second iteration, compile instructions into Instruction Memory
-            if(LabelTable.GroupBy(x => x.Label).Any(g => g.Count() > 1))
+            int InstructionCount = 0;
+            int labelIndex = -1;
+            Queue<LabelData> assignLabel = new Queue<LabelData>();
+            //Second iteration, assign label adresses
+            for (int currentLine = 0; currentLine < InputText.Count; currentLine++)
+            {
+                ReadInstruction(currentLine);
+                RemoveSpaces();
+                if (CurrentInstruction == "")
+                {
+                    continue;
+                }
+                if (CurrentInstruction.IndexOf(":") != -1)
+                {
+                    labelIndex++;
+                    assignLabel.Enqueue(LabelTable[labelIndex]);
+                    continue;
+                }
+                while (assignLabel.Count > 0)
+                    assignLabel.Dequeue().Address = (byte)InstructionCount;
+                InstructionCount++;
+            }
+            iMemory[InstructionCount].Value = 0; //End of Instructions flag in Instruction Memory
+            while (assignLabel.Count > 0)
+                assignLabel.Dequeue().Address = (byte)InstructionCount;
+
+            if (LabelTable.GroupBy(x => x.Label).Any(g => g.Count() > 1))
             {
                 gui.ReportError("Error: Repeated Label Found");
                 return false;
             }
-
-            int InstructionCount = 0;
-            int labelIndex = -1;
-            Queue<LabelData> assignLabel = new Queue<LabelData>();
+            InstructionCount = 0;
+            //Third iteration, compile instructions into Instruction Memory
             for (int currentLine = 0; currentLine < InputText.Count; currentLine++)
             {
                 ReadInstruction(currentLine);
@@ -120,8 +143,6 @@ namespace MIPS.Sim
                 }
                 if (CurrentInstruction.IndexOf(":") != -1)
                 {
-                    labelIndex++;
-                    assignLabel.Enqueue(LabelTable[labelIndex]);
                     continue;
                 }
                 string output = "0";
@@ -140,9 +161,6 @@ namespace MIPS.Sim
                 ushort value = Convert.ToUInt16(output, 2);
                 iMemory[InstructionCount].Value = value;
 
-                while (assignLabel.Count > 0)
-                    assignLabel.Dequeue().Address = (byte)InstructionCount;
-
                 InstructionCount++;
                 if(InstructionCount == 256)
                 {
@@ -150,9 +168,6 @@ namespace MIPS.Sim
                     return false;
                 }
             }
-            iMemory[InstructionCount].Value = 0; //End of Instructions flag in Instruction Memory
-            while (assignLabel.Count > 0)
-                assignLabel.Dequeue().Address = (byte)InstructionCount;
             LabelTable.ForEach(i =>
             {
                 if (i.Address >= iMemoryText.Count)
@@ -213,11 +228,7 @@ namespace MIPS.Sim
                         instruction += FetchI(0);
                         break;
                     case "sll":
-                        instruction += FetchR() + "110";
-                        break;
                     case "srl":
-                        instruction += FetchR() + "111";
-                        break;
                     case "muli":
                     case "lui":
                     case "slti":
@@ -237,188 +248,9 @@ namespace MIPS.Sim
             }
             catch (Exception e)
             {
-
                 throw e;
             }
-
             return instruction;
-            //int i = 0, j = 0; //temp vars
-
-            //if (OperationID == -1)
-            //{
-            //    gui.ReportError("Error:Unknown operation");
-            //    return -2;
-            //}
-            //if (OperationID < 13) // R Format
-            //{
-            //    for (int count = 0; count < 3 - (OperationID > 8 ? 1 : 0); count++)
-            //    {
-            //        RemoveSpaces(CurrentInstruction);
-            //        if (!FindRegister(count))
-            //            return -2;
-            //        RemoveSpaces(CurrentInstruction);
-            //        if (count == 2 - (OperationID > 8 ? 1 : 0))
-            //            break;
-            //        if (!assertRemoveComma())
-            //            return -2;
-            //    }
-            //    if (CurrentInstruction != "")
-            //    {
-            //        gui.ReportError("Error: Extra arguments provided");
-            //        return -2;
-            //    }
-            //}
-            //else if (OperationID < 17) // I format
-            //{
-            //    for (int count = 0; count < 2; count++)
-            //    {
-            //        RemoveSpaces(CurrentInstruction);
-            //        FindRegister(count);
-            //        RemoveSpaces(CurrentInstruction);
-            //        assertRemoveComma();
-            //    }
-            //    RemoveSpaces(CurrentInstruction);
-            //    string tempString = findLabel();
-            //    int temp;
-            //    if (!int.TryParse(tempString, out temp))
-            //    {
-            //        gui.ReportError("Error: Not a valid Immediate argument");
-            //        return -2;
-            //    }
-            //    args[2] = temp;
-            //}
-            //else if (OperationID < 21) // lw sw ldc1 sdc1
-            //{
-            //    string tempString = "";
-            //    int offset;
-            //    RemoveSpaces(CurrentInstruction);
-            //    FindRegister(0);
-            //    RemoveSpaces(CurrentInstruction);
-            //    assertRemoveComma();
-            //    RemoveSpaces(CurrentInstruction);
-            //    if ((CurrentInstruction.ElementAt(0) > 47 && CurrentInstruction.ElementAt(0) < 58) || CurrentInstruction.ElementAt(0) == '-')
-            //    {
-            //        j = 0;
-            //        while (j < CurrentInstruction.Length && CurrentInstruction.ElementAt(j) != ' '
-            //            && CurrentInstruction.ElementAt(j) != '\t' && CurrentInstruction.ElementAt(j) != '(')
-            //        {
-            //            tempString = tempString + CurrentInstruction.ElementAt(j);
-            //            j++;
-            //        }
-            //        if (j == CurrentInstruction.Length)
-            //        {
-            //            gui.ReportError("Error: '(' expected");
-            //            return -2;
-            //        }
-            //        int temp;
-            //        if (!int.TryParse(tempString, out temp))
-            //        {
-            //            gui.ReportError("Error: not a valid offset");
-            //            return -2;
-            //        }
-            //        offset = temp;
-            //        CurrentInstruction = CurrentInstruction.Substring(j);
-            //        RemoveSpaces(CurrentInstruction);
-            //        if (CurrentInstruction == "" || CurrentInstruction.ElementAt(0) != '(' || CurrentInstruction.Length < 2)
-            //        {
-            //            gui.ReportError("Error: '(' expected");
-            //            return -2;
-            //        }
-            //        CurrentInstruction = CurrentInstruction.Substring(1);
-            //        RemoveSpaces(CurrentInstruction);
-            //        FindRegister(1);
-            //        RemoveSpaces(CurrentInstruction);
-            //        if (CurrentInstruction == "" || CurrentInstruction.ElementAt(0) != ')')
-            //        {
-            //            gui.ReportError("Error: ')' expected");
-            //            return -2;
-            //        }
-            //        CurrentInstruction = CurrentInstruction.Substring(1);
-            //        OnlySpaces(0, CurrentInstruction.Length, CurrentInstruction);
-            //        args[2] = offset;
-            //        if (args[2] == -1)
-            //        {
-            //            gui.ReportError("Error: invalid offset");
-            //            return -2;
-            //        }
-            //    }
-            //    else //label
-            //    {
-            //        tempString = findLabel();
-            //        bool foundLocation = false;
-            //        for (j = 0; j < MemoryTable.Count; j++)
-            //        {
-            //            if (tempString == MemoryTable[j].Label)
-            //            {
-            //                foundLocation = true;
-
-            //                args[1] = j;
-            //                break;
-            //            }
-            //        }
-            //        if (!foundLocation)
-            //        {
-            //            gui.ReportError("Error: invalid label");
-            //            return -2;
-            //        }
-            //        args[2] = -1;
-            //    }
-
-            //}
-            //else if (OperationID < 23) // beq blt
-            //{
-            //    for (int count = 0; count < 2; count++)
-            //    {
-            //        RemoveSpaces(CurrentInstruction);
-            //        FindRegister(count);
-            //        RemoveSpaces(CurrentInstruction);
-            //        assertRemoveComma();
-            //    }
-            //    RemoveSpaces(CurrentInstruction);
-            //    string tempString = findLabel();
-            //    bool found = false;
-            //    for (j = 0; j < LabelTable.Count; j++)
-            //    {
-            //        if (tempString == LabelTable[j].Label)
-            //        {
-            //            found = true;
-            //            args[2] = LabelTable[j].Address;
-            //            break;
-            //        }
-            //    }
-            //    if (!found)
-            //    {
-            //        gui.ReportError("Error: invalid label");
-            //        return -2;
-            //    }
-            //}
-            //else if (OperationID < 26) // j bclt bclf
-            //{
-            //    RemoveSpaces(CurrentInstruction);
-            //    bool found = false;
-            //    string tempString = findLabel();
-            //    for (j = 0; j < LabelTable.Count; j++)
-            //    {
-            //        if (tempString == LabelTable[j].Label)
-            //        {
-            //            found = true;
-            //            args[0] = LabelTable[j].Address;
-            //        }
-            //    }
-            //    if (!found)
-            //    {
-            //        gui.ReportError("Error: invalid label");
-            //        return -2;
-            //    }
-            //}
-            //else if (OperationID < 28) // mflo mfhi
-            //{
-            //    RemoveSpaces(CurrentInstruction);
-            //    if (!FindRegister(0))
-            //        return -2;
-            //    if (!OnlySpaces(0, CurrentInstruction.Length, CurrentInstruction))
-            //        return -2;
-            //}
         }
         private bool assertLabelAllowed(string str)
         {
@@ -633,15 +465,16 @@ namespace MIPS.Sim
             if (CurrentLine < iMemory.Count && iMemory[CurrentLine].Value != 0)
             {
                 LastLine = CurrentLine;
-                CurrentLine++;
                 try
                 {
                     ExecuteInstruction(iMemory[CurrentLine].Binary);
+                    gui.RefreshControls();
                 }
                 catch (Exception e)
                 {
                     gui.SendLog("on Line: " + CurrentLine.ToString());
                 }
+                CurrentLine++;
             }
             if (iMemory[CurrentLine].Value == 0)
             {
@@ -652,105 +485,76 @@ namespace MIPS.Sim
         public bool ExecuteInstruction(string instruction)
         {
             string opCode = instruction.Substring(0, 4);
-            string opString = InstructionSet.First(i => i.Value == opCode).Key;
-            /*switch (opString)
+
+            switch (opCode)
             {
-                case "add":
+                case "0000":
+                    string funcCode;
+                    funcCode = instruction.Substring(13, 3);
+                    switch (funcCode)
+                    {
+                        case "000":
+                            Add(instruction);
+                            break;
+                        case "001":
+                            Sub(instruction);
+                            break;
+                        case "010":
+                            And(instruction);
+                            break;
+                        case "011":
+                            Or(instruction);
+                            break;
+                        case "100":
+                            Slt(instruction);
+                            break;
+                        case "101":
+                            Mul(instruction);
+                            break;
+                        case "110":
+                            Sll(instruction);
+                            break;
+                        case "111":
+                            Srl(instruction);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "0001":
+                    Jr(instruction);
+                    break;
+                case "0010":
+                    Slti(instruction);
+                    break;
+                case "0011":
+                    Beq(instruction);
+                    break;
+                case "0100":
+                    Bne(instruction);
+                    break;
+                case "0101":
+                    Muli(instruction);
+                    break;
+                case "0110":
+                    Lui(instruction);
+                    break;
+                case "0111":
+                    Lw(instruction);
+                    break;
+                case "1000":
+                    Sw(instruction);
+                    break;
+                case "1001":
+                    J(instruction);
+                    break;
+                case "1010":
+                    Jal(instruction);
                     break;
                 default:
                     break;
-            }*/
+            }
             return true;
-
-            //switch (instruction)
-            //{
-            //    case 0:
-            //        add();
-            //        break;
-            //    case 1:
-            //        sub();
-            //        break;
-            //    case 2:
-            //        and();
-            //        break;
-            //    case 3:
-            //        or();
-            //        break;
-            //    case 4:
-            //        slt();
-            //        break;
-            //    case 5:
-            //        addd();
-            //        break;
-            //    case 6:
-            //        subd();
-            //        break;
-            //    case 7:
-            //        muld();
-            //        break;
-            //    case 8:
-            //        divd();
-            //        break;
-            //    case 9:
-            //        ceqd();
-            //        break;
-            //    case 10:
-            //        cltd();
-            //        break;
-            //    case 11:
-            //        mult();
-            //        break;
-            //    case 12:
-            //        div();
-            //        break;
-            //    case 13:
-            //        addi();
-            //        break;
-            //    case 14:
-            //        andi();
-            //        break;
-            //    case 15:
-            //        ori();
-            //        break;
-            //    case 16:
-            //        slti();
-            //        break;
-            //    case 17:
-            //        lw();
-            //        break;
-            //    case 18:
-            //        sw();
-            //        break;
-            //    case 19:
-            //        ldc1();
-            //        break;
-            //    case 20:
-            //        sdc1();
-            //        break;
-            //    case 21:
-            //        beq();
-            //        break;
-            //    case 22:
-            //        blt();
-            //        break;
-            //    case 23:
-            //        j();
-            //        break;
-            //    case 24:
-            //        bc1t();
-            //        break;
-            //    case 25:
-            //        bc1f();
-            //        break;
-            //    case 26:
-            //        mflo();
-            //        break;
-            //    case 27:
-            //        mfhi();
-            //        break;
-            //    default:
-            //        return false;
-            //}
         }
     }
 }

@@ -58,13 +58,25 @@ namespace MIPS
                 return;
             }
             State = SimStateMachine.Compiled;
-            richTextBox2.Lines = simulator.iMemoryText.ToArray();
+            BindCompiledText();
             RefreshControl(richTextBox2);
             RefreshControl(DGVim);
             SelectTab(MetroSetTabControl1, 1);
             SelectTab(MetroSetTabControl2, 0);
         }
-
+        delegate void BindCompiledTextCallback();
+        public void BindCompiledText()
+        {
+            if (richTextBox2.InvokeRequired)
+            {
+                BindCompiledTextCallback d = new BindCompiledTextCallback(BindCompiledText);
+                this.Invoke(d);
+            }
+            else
+            {
+                richTextBox2.Lines = simulator.iMemoryText.ToArray();
+            }
+        }
         delegate void SelectTabCallback(MetroSetTabControl control, int index);
         public void SelectTab(MetroSetTabControl control, int index)
         {

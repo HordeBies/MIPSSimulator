@@ -15,7 +15,7 @@ namespace MIPS.Sim
         {
             LabelTable = new List<LabelData>();
             iMemoryText = new List<string>();
-            gui.richTextBox2.Lines = iMemoryText.ToArray();
+            gui.BindCompiledText();
             iMemory.ForEach(i => i.Value = 0);
             Registers.ForEach(i => i.Value = 0);
             Registers[6].Value = 255;
@@ -128,6 +128,7 @@ namespace MIPS.Sim
                 iMemoryText.Add(CurrentInstruction);
                 try
                 {
+                    CurrentLine++;
                     output = ParseInstruction();
                 }
                 catch (Exception e)
@@ -161,6 +162,7 @@ namespace MIPS.Sim
             });
             gui.SendLog("Initialized and ready to execute.");
 
+            CurrentLine = 0;
             return true;
         }
         private string ParseInstruction()
@@ -516,7 +518,16 @@ namespace MIPS.Sim
                 switch (LOI)
                 {
                     case 0: //label
-                         end = Extend(FindLabel(),6);
+                        short val = (short)(FindLabel() - ((short)CurrentLine));
+                        if(val < 0)
+                        {
+                            val = Math.Abs(val);
+                            end = SignExtend("1"+Convert.ToString(val,2), 6);
+                        }
+                        else
+                        {
+                            end = Extend(Convert.ToString(val,2),6);
+                        }
                         break;
                     case 1: //offset
                         end = Extend(FindOffset(),6);
@@ -549,7 +560,7 @@ namespace MIPS.Sim
                         instruction += Extend(Convert.ToString(FindRegister().Value,2),3)+"000000000";
                         break;
                     case false:
-                        instruction += Extend(FindLabel(),12);
+                        instruction += Extend(Convert.ToString(FindLabel(),2),12);
                         break;
                 }
                 RemoveSpaces();
@@ -563,7 +574,7 @@ namespace MIPS.Sim
                 throw e;
             }
         }
-        private string FindLabel()
+        private short FindLabel()
         {
             int j = 0;
             while(j < CurrentInstruction.Length && CurrentInstruction[j] != ' ' && CurrentInstruction[j] != '\t')
@@ -572,14 +583,14 @@ namespace MIPS.Sim
             }
             string labelName = CurrentInstruction.Substring(0, j);
             CurrentInstruction = CurrentInstruction.Substring(j);
-            return Convert.ToString(LabelTable.Find(i => i.Label == labelName).Address, 2);
+            return LabelTable.Find(i => i.Label == labelName).Address;
         }
         private string FindOffset()
         {
             int j = 0;
             while(CurrentInstruction[j] != '(')
             {
-                if (j > CurrentInstruction.Length)
+                if (j >= CurrentInstruction.Length)
                     throw new Exception("Invalid Offset");
                 j++;
             }

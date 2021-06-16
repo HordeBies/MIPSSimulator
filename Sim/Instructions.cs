@@ -510,5 +510,157 @@ namespace MIPS.Sim
 		//	}
 		//}
 
+
+		
+
+        private Register FetchRd(string instruction)
+        {
+            return Registers[int.Parse(instruction.Substring(10, 3))];
+        }
+
+        private Register FetchRt(string instruction)
+        {
+            return Registers[int.Parse(instruction.Substring(7, 3))];
+        }
+
+        private Register FetchRs(string instruction)
+        {
+            return Registers[int.Parse(instruction.Substring(4, 3))];
+        }
+		private short FetchOffset(string instruction)
+        {
+			return short.Parse(instruction.Substring(10, 6));
+        }
+
+		private int FetchJumpOffset(string instruction)
+        {
+			return short.Parse(instruction.Substring(4, 12));
+        }
+
+		void Add(string instruction)
+		{
+			Register rd = FetchRd(instruction);
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+
+			rd.Value = (short)(rt.Value + rs.Value);
+		}
+
+		void Sub(string instruction)
+		{
+			Register rd = FetchRd(instruction);
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+
+			rd.Value = (short)(rs.Value - rt.Value);
+		}
+
+		void And(string instruction)
+        {
+			Register rd = FetchRd(instruction);
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+
+			rd.Value = (short)(rs.Value & rt.Value);
+		}
+
+		void Or(string instruction)
+		{
+			Register rd = FetchRd(instruction);
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+
+			rd.Value = (short)(rs.Value | rt.Value);
+		}
+
+		void Slt(string instruction)
+		{
+			Register rd = FetchRd(instruction);
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+
+			rd.Value = (short)(rs.Value < rt.Value ? 1:0);
+		}
+
+		void Mul(string instruction)
+		{
+			Register rd = FetchRd(instruction);
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+
+			rd.Value = (short)(rs.Value * rt.Value);
+		}
+
+		void Sll(string instruction)
+        {
+
+        }
+
+		void Srl(string instruction)
+		{
+
+		}
+
+		void Slti(string instruction)
+        {
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+			short offset = FetchOffset(instruction);
+			rt.Value = (short)(rs.Value < offset ? 1 : 0);
+		}
+		void Beq(string instruction)
+        {
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+			int offset = FetchOffset(instruction);
+
+            if (rs == rt)
+            {
+				CurrentLine += offset;
+            }
+		}
+		void Bne(string instruction)
+		{
+			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
+			int offset = FetchOffset(instruction);
+
+			if (rs != rt)
+			{
+				CurrentLine += offset;
+			}
+		}
+		void Muli(string instruction)
+		{
+
+		}
+		void Lui(string instruction)
+		{
+
+		}
+		void Lw(string instruction)
+		{
+
+		}
+		void Sw(string instruction)
+		{
+
+		}
+		void J(string instruction)
+		{
+
+		}
+		void Jal(string instruction)
+		{
+
+		}
+
+
+		void Jr(string instruction)
+        {
+			Register rs = FetchRs(instruction);
+			CurrentLine = rs.Value;
+        }
+
 	}
 }

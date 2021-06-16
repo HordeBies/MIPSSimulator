@@ -641,14 +641,75 @@ namespace MIPS.Sim
         public bool ExecuteInstruction(string instruction)
         {
             string opCode = instruction.Substring(0, 4);
-            string opString = InstructionSet.First(i => i.Value == opCode).Key;
-            /*switch (opString)
+            
+            switch (opCode)
             {
-                case "add":
+                case "0000":
+                    string funcCode = "";
+                    funcCode = instruction.Substring(13, 3);
+                    switch (funcCode)
+                    {
+                        case "000":
+                            Add(instruction);
+                            break;
+                        case "001":
+                            Sub(instruction);
+                            break;
+                        case "010":
+                            And(instruction);
+                            break;
+                        case "011":
+                            Or(instruction);
+                            break;
+                        case "100":
+                            Slt(instruction);
+                            break;
+                        case "101":
+                            Mul(instruction);
+                            break;
+                        case "110":
+                            Sll(instruction);
+                            break;
+                        case "111":
+                            Srl(instruction);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "0001":
+                    Jr(instruction);
+                    break;
+                case "0010":
+                    Slti(instruction);
+                    break;
+                case "0011":
+                    Beq(instruction);
+                    break;
+                case "0100":
+                    Bne(instruction);
+                    break;
+                case "0101":
+                    Muli(instruction);
+                    break;
+                case "0110":
+                    Lui(instruction);
+                    break;
+                case "0111":
+                    Lw(instruction);
+                    break;
+                case "1000":
+                    Sw(instruction);
+                    break;
+                case "1001":
+                    J(instruction);
+                    break;
+                case "1010":
+                    Jal(instruction);
                     break;
                 default:
                     break;
-            }*/
+            }
             return true;
 
             //switch (instruction)

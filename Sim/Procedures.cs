@@ -20,8 +20,8 @@ namespace MIPS.Sim
             Registers.ForEach(i => i.Value = 0);
             Registers[6].Value = 255;
             gui.ClearLog();
-            gui.SelectTab(gui.MetroSetTabControl1, 0);
-            gui.SelectTab(gui.MetroSetTabControl2, 0);
+            gui.SelectTab(gui.MetroSetTabControl1, 0,-1);
+            gui.SelectTab(gui.MetroSetTabControl2, 0,-1);
             gui.RefreshControls();
             CurrentLine = 0;
         }
@@ -342,14 +342,15 @@ namespace MIPS.Sim
                 RemoveSpaces();
                 assertRemoveComma();
                 RemoveSpaces();
-                string r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
-                RemoveSpaces();
-                assertRemoveComma();
-                RemoveSpaces();
+                string r2 = "";
                 string end = "";
                 switch (LOI)
                 {
                     case 0: //label
+                        r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                        RemoveSpaces();
+                        assertRemoveComma();
+                        RemoveSpaces();
                         short val = (short)(FindLabel() - ((short)CurrentLine));
                         if(val < 0)
                         {
@@ -362,9 +363,17 @@ namespace MIPS.Sim
                         }
                         break;
                     case 1: //offset
-                        end = Extend(FindOffset(),6);
+                        end = SignExtend(FindOffset(),6);
+                        r2 = Extend(Convert.ToString(FindRegister().id,2),3);
+                        if (CurrentInstruction[0] != ')')
+                            throw new Exception("Ivalid Offset");
+                        CurrentInstruction = CurrentInstruction.Substring(1);
                         break;
                     case 2: //immediate
+                        r2 = Extend(Convert.ToString(FindRegister().id, 2), 3);
+                        RemoveSpaces();
+                        assertRemoveComma();
+                        RemoveSpaces();
                         end = SignExtend(FindImmediate(),6);
                         break;
                     default:
@@ -389,7 +398,7 @@ namespace MIPS.Sim
                 switch (jrFlag)
                 {
                     case true:
-                        instruction += Extend(Convert.ToString(FindRegister().Value,2),3)+"000000000";
+                        instruction += Extend(Convert.ToString(FindRegister().id,2),3)+"000000000";
                         break;
                     case false:
                         instruction += Extend(Convert.ToString(FindLabel(),2),12);
@@ -431,11 +440,14 @@ namespace MIPS.Sim
             if (CurrentInstruction[0] != '(')
                 throw new Exception("Invalid Offset");
             CurrentInstruction = CurrentInstruction.Substring(1);
-            Register r = FindRegister();
-            if (CurrentInstruction[0] != ')')
-                throw new Exception("Ivalid Offset");
-            CurrentInstruction = CurrentInstruction.Substring(1);
-            return Convert.ToString(r.Value+offset,2);
+            if(offset < 0)
+            {
+                return "1"+Convert.ToString(Math.Abs(offset), 2);
+            }
+            else
+            {
+                return "0"+Convert.ToString(offset,2);
+            }
             
         }
         private string FindImmediate()
@@ -511,13 +523,8 @@ namespace MIPS.Sim
                         case "101":
                             Mul(instruction);
                             break;
-                        case "110":
-                            Sll(instruction);
-                            break;
-                        case "111":
-                            Srl(instruction);
-                            break;
                         default:
+                            gui.ReportError("Error: Invalid FuncCode??");
                             break;
                     }
                     break;
@@ -551,7 +558,14 @@ namespace MIPS.Sim
                 case "1010":
                     Jal(instruction);
                     break;
+                case "1011":
+                    Sll(instruction);
+                    break;
+                case "1100":
+                    Srl(instruction);
+                    break;
                 default:
+                    gui.ReportError("Error: Invalid OPCODE ??");
                     break;
             }
             return true;

@@ -8,11 +8,6 @@ namespace MIPS.Sim
 {
 	public partial class MIPSSimulator
 	{
-		private void OpError()
-		{
-			gui.ReportError("Error: invalid usage of instruction");
-			return;
-		}
 		private short ConvertSignedNumber(string number)
         {
 			short result;
@@ -57,6 +52,7 @@ namespace MIPS.Sim
 			Register rs = FetchRs(instruction);
 
 			rd.Value = (short)(rt.Value + rs.Value);
+			gui.SelectTab(gui.MetroSetTabControl2,2,Registers.IndexOf(rd));
 		}
 
 		void Sub(string instruction)
@@ -66,6 +62,7 @@ namespace MIPS.Sim
 			Register rs = FetchRs(instruction);
 
 			rd.Value = (short)(rs.Value - rt.Value);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rd));
 		}
 
 		void And(string instruction)
@@ -75,6 +72,7 @@ namespace MIPS.Sim
 			Register rs = FetchRs(instruction);
 
 			rd.Value = (short)(rs.Value & rt.Value);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rd));
 		}
 
 		void Or(string instruction)
@@ -84,6 +82,7 @@ namespace MIPS.Sim
 			Register rs = FetchRs(instruction);
 
 			rd.Value = (short)(rs.Value | rt.Value);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rd));
 		}
 
 		void Slt(string instruction)
@@ -93,6 +92,7 @@ namespace MIPS.Sim
 			Register rt = FetchRt(instruction);
 
 			rd.Value = (short)(rs.Value < rt.Value ? 1 : 0);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rd));
 		}
 
 		void Mul(string instruction)
@@ -103,22 +103,25 @@ namespace MIPS.Sim
 			var rs1 = Convert.ToUInt16(rs.Binary.Substring(8, 8),2);
 			var rt1 = Convert.ToUInt16(rt.Binary.Substring(8, 8),2);
 			rd.Value = (short)(rs1 * rt1);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rd));
 		}
 
 		void Sll(string instruction)
 		{
-			Register rd = FetchRd(instruction);
+			Register rt = FetchRt(instruction);
 			Register rs = FetchRs(instruction);
 			short imm = FetchOffset(instruction);
-			rd.Value = (short)(rs.Value << imm);
+			rt.Value = (short)(rs.Value << imm);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rt));
 		}
 
 		void Srl(string instruction)
 		{
-			Register rd = FetchRd(instruction);
+			Register rt = FetchRt(instruction);
 			Register rs = FetchRs(instruction);
 			short imm = FetchOffset(instruction);
-			rd.Value = (short)(rs.Value >> imm);
+			rt.Value = (short)(rs.Value >> imm);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rt));
 		}
 
 		void Slti(string instruction)
@@ -127,6 +130,7 @@ namespace MIPS.Sim
 			Register rs = FetchRs(instruction);
 			short offset = FetchOffset(instruction);
 			rt.Value = (short)(rs.Value < offset ? 1 : 0);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rt));
 		}
 		void Beq(string instruction)
 		{
@@ -138,6 +142,7 @@ namespace MIPS.Sim
 			{
 				CurrentLine += offset;
 			}
+			gui.SelectTab(gui.MetroSetTabControl2, 2, -1);
 		}
 		void Bne(string instruction)
 		{
@@ -149,6 +154,7 @@ namespace MIPS.Sim
 			{
 				CurrentLine += offset;
 			}
+			gui.SelectTab(gui.MetroSetTabControl2, 2, -1);
 		}
 		void Muli(string instruction)
 		{
@@ -156,22 +162,30 @@ namespace MIPS.Sim
 			Register rt = FetchRt(instruction);
 			short imm = FetchOffset(instruction);
 			rt.Value = (short)(rs.Value * imm);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rt));
 		}
 		void Lui(string instruction)
 		{
-
+			Register rt = FetchRt(instruction);
+			short imm = FetchOffset(instruction);
+			rt.Value = (short)(imm << 8);
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rt));
 		}
 		void Lw(string instruction)
 		{
 			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
 			short offset = FetchOffset(instruction);
-			rt.Value = dMemory[offset].Value;
+			rt.Value = dMemory[rs.Value + offset].Value;
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rt));
 		}
 		void Sw(string instruction)
 		{
 			Register rt = FetchRt(instruction);
+			Register rs = FetchRs(instruction);
 			short offset = FetchOffset(instruction);
-			dMemory[offset].Value = rt.Value;
+			dMemory[rs.Value + offset].Value = rt.Value;
+			gui.SelectTab(gui.MetroSetTabControl2, 1, rs.Value+offset);
 		}
 		void J(string instruction)
 		{
@@ -181,13 +195,15 @@ namespace MIPS.Sim
 		{
 			Registers[7].Value = (short)(CurrentLine + 1);
 			CurrentLine = FetchJumpOffset(instruction) - 1;
+			gui.SelectTab(gui.MetroSetTabControl2, 2, 7);
 		}
 
 
 		void Jr(string instruction)
 		{
 			Register rs = FetchRs(instruction);
-			CurrentLine = rs.Value;
+			CurrentLine = rs.Value - 1;
+			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rs));
 		}
 
 	}

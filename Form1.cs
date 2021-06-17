@@ -61,8 +61,8 @@ namespace MIPS
             BindCompiledText();
             RefreshControl(richTextBox2);
             RefreshControl(DGVim);
-            SelectTab(MetroSetTabControl1, 1);
-            SelectTab(MetroSetTabControl2, 0);
+            SelectTab(MetroSetTabControl1, 1,0);
+            SelectTab(MetroSetTabControl2, 0,0);
         }
         delegate void BindCompiledTextCallback();
         public void BindCompiledText()
@@ -77,19 +77,24 @@ namespace MIPS
                 richTextBox2.Lines = simulator.iMemoryText.ToArray();
             }
         }
-        delegate void SelectTabCallback(MetroSetTabControl control, int index);
-        public void SelectTab(MetroSetTabControl control, int index)
+        delegate void SelectTabCallback(MetroSetTabControl control, int index, int arg);
+        public void SelectTab(MetroSetTabControl control, int index, int arg)
         {
             if (!metroSetRadioButton1.Checked)
                 return;
             if (control.InvokeRequired)
             {
                 SelectTabCallback d = new SelectTabCallback(SelectTab);
-                this.Invoke(d, new object[] { control, index });
+                this.Invoke(d, new object[] { control, index, arg });
             }
             else
             {
                 control.SelectTab(index);
+                if(control == MetroSetTabControl2 && index < 3 && arg > -1)
+                {
+                    DataGridView d = control.SelectedTab.Controls[0] as DataGridView;
+                    d.CurrentCell = d[0, arg];
+                }
             }
         }
         delegate void RefreshControlCallback(Control control);
@@ -128,11 +133,12 @@ namespace MIPS
         {
             metroSetListBox1.AddItem(msg);
             RefreshControl(metroSetListBox1);
-            SelectTab(MetroSetTabControl2, 3);
+            SelectTab(MetroSetTabControl2, 3,0);
         }
         public void ReportError(string err)
         {
             SendLog(err);
+            Stop(null, null);
         }
         private void InitDGVbindings()
         {

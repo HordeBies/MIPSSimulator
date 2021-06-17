@@ -120,6 +120,19 @@
   <metadata name="styleManager1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="richTextBox1.Text" xml:space="preserve">
+    <value>slt $r0,$zero,$sp #set r0 = 1
+muli $r1,$r0,5 #r1 = 5
+add $r2,$zero,$zero #r2 = 0
+add $r3,$zero,$zero #r3 = 0
+j cond
+loop:
+	add $r3 , $r3, $r1
+	add $r2 , $r2, $r0
+cond:
+	slti $r0 ,$r2, 4
+	bne $r0, $zero, loop</value>
+  </data>
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>451, 17</value>
   </metadata>

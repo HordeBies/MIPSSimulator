@@ -611,9 +611,9 @@ namespace MIPS
             // 
             this.metroSetRadioButton1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
             this.metroSetRadioButton1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(155)))), ((int)(((byte)(155)))));
-            this.metroSetRadioButton1.Checked = false;
+            this.metroSetRadioButton1.Checked = true;
             this.metroSetRadioButton1.CheckSignColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(177)))), ((int)(((byte)(225)))));
-            this.metroSetRadioButton1.CheckState = MetroSet_UI.Enums.CheckState.Unchecked;
+            this.metroSetRadioButton1.CheckState = MetroSet_UI.Enums.CheckState.Checked;
             this.metroSetRadioButton1.DisabledBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(85)))), ((int)(((byte)(85)))), ((int)(((byte)(85)))));
             this.metroSetRadioButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.metroSetRadioButton1.Group = 0;
@@ -680,8 +680,7 @@ namespace MIPS
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(353, 366);
             this.richTextBox1.TabIndex = 27;
-            this.richTextBox1.Text = "add $r1 ,$r2 ,$r3\nadd $r2 ,$r2 ,$r3\n\nlabel2:\n\nbne $r1 ,$r2, exit\n\nmuli $r2 ,$r2, " +
-    "1\n\nj label2\n\nexit:";
+            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
             // metroSetSetTabPage2
             // 

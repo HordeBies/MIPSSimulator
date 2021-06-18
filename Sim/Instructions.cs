@@ -100,8 +100,18 @@ namespace MIPS.Sim
 			Register rd = FetchRd(instruction);
 			Register rt = FetchRt(instruction);
 			Register rs = FetchRs(instruction);
-			var rs1 = Convert.ToUInt16(rs.Binary.Substring(8, 8),2);
-			var rt1 = Convert.ToUInt16(rt.Binary.Substring(8, 8),2);
+			var rs1 = rs.Value;
+			var rt1 = rt.Value;
+			if (rs.Value > 127 || rs.Value < -128)
+            {
+				rs1 = (short)(rs.Value << 8);
+				rs1 = (short)(rs1 >> 8);
+            }
+			if(rt.Value > 127 || rt.Value < -128)
+            {
+				rt1 = (short)(rt.Value << 8);
+				rt1 = (short)(rt1 >> 8);
+			}
 			rd.Value = (short)(rs1 * rt1);
 			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rd));
 		}
@@ -161,7 +171,13 @@ namespace MIPS.Sim
 			Register rs = FetchRs(instruction);
 			Register rt = FetchRt(instruction);
 			short imm = FetchOffset(instruction);
-			rt.Value = (short)(rs.Value * imm);
+			short rs1 = rs.Value;
+			if (rs.Value > 127 || rs.Value < -128)
+			{
+				rs1 = (short)(rs.Value << 8);
+				rs1 = (short)(rs1 >> 8);
+			}
+			rt.Value = (short)(rs1 * imm);
 			gui.SelectTab(gui.MetroSetTabControl2, 2, Registers.IndexOf(rt));
 		}
 		void Lui(string instruction)

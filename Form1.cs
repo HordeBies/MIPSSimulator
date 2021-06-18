@@ -160,8 +160,15 @@ namespace MIPS
         private void Enable(Button button) => button.Enabled = true;
         private void Disable(Button button) => button.Enabled = false;
 
+        delegate void UpdateButtonsCallBack();
         private void UpdateButtons()
         {
+            if (CompileButton.InvokeRequired)
+            {
+                var d = new UpdateButtonsCallBack(UpdateButtons);
+                this.Invoke(d);
+                return;
+            }
             switch (state)
             {
                 case SimStateMachine.Empty:

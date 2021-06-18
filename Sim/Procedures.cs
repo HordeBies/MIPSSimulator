@@ -227,10 +227,12 @@ namespace MIPS.Sim
                     case "bne":
                         instruction += FetchI(0);
                         break;
+                    case "lui":
+                        instruction += FetchI(3);
+                        break;
                     case "sll":
                     case "srl":
                     case "muli":
-                    case "lui":
                     case "slti":
                         instruction += FetchI(2);
                         break;
@@ -375,6 +377,10 @@ namespace MIPS.Sim
                         assertRemoveComma();
                         RemoveSpaces();
                         end = SignExtend(FindImmediate(),6);
+                        break;
+                    case 3: //lui
+                        r2 = "000";
+                        end = SignExtend(FindImmediate(), 6);
                         break;
                     default:
                         break;

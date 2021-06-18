@@ -124,15 +124,12 @@
     <value>
 Details:
 	Comments are supported
-	The .data section can contain labels of type .word and .float. 
-	Only integer and float data is suppoerted.
-	The .text section must contain a main label
-	Addresses 40000 to 40396 represent the locations of memory elements for a 100 element stack.
-	Any memory element created in the data section is assigned an address starting from 40400.
+	Both instruction and data Addresses are offsetted 
+		between 0 to 255 represent the locations of memory elements for 256 element stacks.
 	Program ends when last line executed
-	The registers $zero and $at can not be modified
+	The register $zero can not be modified
 	Any label must start with an alphabet, and can contain only numbers and alphabets.
-
+	
 
 
 
